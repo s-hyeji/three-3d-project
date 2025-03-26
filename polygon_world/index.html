@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POLYGONWORLD</title>
+  <title>POLYGON WORLD</title>
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="./css/index.css">
+
   <script type="importmap">
     {
       "imports" : {
@@ -17,10 +20,49 @@
 </head>
 
 <body>
+  <div id="wrap">
+    <div class="polygonSelectButtons">
+      <div class="btn_square" data-select="square"></div>
+      <div class="btn_triangle" data-select="triangle"></div>
+      <div class="btn_circle" data-select="circle"></div>
+    </div>
+    <section>
+      <fieldset class="controllerBox">
+        <legend>옵션 설정</legend>
+        <label class="controll_toggle light">
+          <p>빛</p>
+          <input type="checkbox">
+          <span class="check_toggle"></span>
+        </label>
+        <label class="controll_toggle trans">
+          <p>투명</p>
+          <input type="checkbox">
+          <span class="check_toggle"></span>
+        </label>
+        <div class="controll_color">
+          <p>면 색상</p>
+          <div class="select_color"></div>
+          <ul class="sub_colorSelectBox">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+          </ul>
+        </div>
+      </fieldset>
+    </section>
+  </div>
 
-  <div id="box" style="width: 100px; height: 100px; background: red; position: absolute;"></div>
-
-  <script src="./js/index.js" type="module"></script>
+  <script type="text/javascript" src="../common/scale.js"></script>
+  <script type="module" src="./js/index.js"></script>
 </body>
 
 </html>

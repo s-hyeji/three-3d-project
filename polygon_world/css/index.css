@@ -1,0 +1,46 @@
+.controllerBox {
+ [class*="controll_"] {
+  width: fit-content;
+  cursor: pointer;
+  user-select: none;
+ }
+
+ .controll_toggle {
+  position: relative;
+  display: flex;
+
+  & input {
+   display: none;
+  }
+ }
+
+ .check_toggle {
+  position: relative;
+  width: 50px;
+  height: 25px;
+  border-radius: 25px;
+  background-color: #ccc;
+  transition: 0.4s;
+ }
+
+
+ .check_toggle:before {
+  position: absolute;
+  content: "";
+  height: 19px;
+  width: 19px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+ }
+
+ input:checked+.check_toggle {
+  background-color: #4caf50;
+ }
+
+ input:checked+.check_toggle:before {
+  transform: translateX(25px);
+ }
+}
