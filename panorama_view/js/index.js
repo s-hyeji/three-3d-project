@@ -1,5 +1,14 @@
 import * as THREE from "three";
 import { OrbitControls } from "OrbitControls";
+import gsap from "gsap";
+
+gsap.to("#box", {
+  x: 300,
+  y: 300,
+  duration: 2,
+  ease: "bounce.out" // 바운스 효과 적용
+});
+
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffe287);
@@ -9,7 +18,7 @@ camera.position.set(3, 3, 3);
 camera.lookAt(0, 0, 0);
 
 const renderer = new THREE.WebGLRenderer({
- alpha: true
+  alpha: true
 });
 
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -40,7 +49,7 @@ controls.enableDamping = true;
 
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshStandardMaterial({
- color: 0xffaaaa
+  color: 0xffaaaa
 });
 
 const mesh = new THREE.Mesh(geometry, material);
@@ -51,14 +60,14 @@ scene.add(axesHelper);
 
 
 function animate() {
- controls.update();
- renderer.render(scene, camera);
- requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
 }
 animate();
 
 window.addEventListener("resize", () => {
- camera.aspect = window.innerWidth / window.innerHeight;
- renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  renderer.setSize(window.innerWidth, window.innerHeight);
 
 });
