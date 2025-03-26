@@ -1,4 +1,109 @@
+#wrap::after {
+ content: "";
+ position: absolute;
+ top: 0;
+ left: 0;
+ right: 0;
+ bottom: 0;
+ background: #ffe9e9 url(../images/polygon_world_bg.png) 0px 0px/500px auto;
+ opacity: 0.5;
+ z-index: -1;
+}
+
+/* ★★★★★★★★★★ */
+/* start start start*/
+/* ★★★★★★★★★★ */
+.start {
+ position: absolute;
+ top: 40%;
+ left: 50%;
+ width: 80%;
+ height: fit-content;
+ transform: translate(-50%, -50%);
+ user-select: none;
+
+ .selectText {
+  position: relative;
+  width: 100%;
+  padding: 30px 0px;
+  margin-block-end: 30px;
+  font-size: 60px;
+  text-align: center;
+  color: #fff;
+  border-radius: 10px;
+  background-color: #ff7694;
+  box-shadow: 5px 5px 1px #00000042;
+ }
+
+ .polygonSelectButtons {
+  /* position: relative; */
+  width: 100%;
+
+  [class*="btn_"] {
+   position: absolute;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width: 300px;
+   height: 120px;
+   font-size: 60px;
+   text-align: center;
+   border-radius: 10px;
+   background-color: #fff;
+   border: 8px solid #FF7694;
+   box-shadow: 5px 5px 1px #00000042;
+   cursor: pointer;
+
+   &.on {
+    pointer-events: none;
+    transform-origin: left;
+   }
+
+   &[data-select="square"] {
+    left: 0;
+   }
+
+   &[data-select="triangle"] {
+    left: 376px;
+   }
+
+   &[data-select="circle"] {
+    left: 740px;
+   }
+
+
+  }
+
+  .reset {
+   position: absolute;
+   display: none;
+  }
+
+ }
+}
+
+.test {
+ position: absolute;
+ top: -272px;
+ left: 50%;
+ width: 300px;
+ height: 120px;
+ border: 8px solid #FF7694;
+ scale: 0.7;
+ transform: translate(-50%, 0);
+ transform-origin: left;
+}
+
+/* ★★★★★★ */
+/* controllerBox*/
+/* ★★★★★★ */
 .controllerBox {
+ display: none;
+
+ &.on {
+  display: block;
+ }
+
  [class*="controll_"] {
   width: fit-content;
   cursor: pointer;
