@@ -4,19 +4,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>panorama_view aaaa</title>
-  <script async src="https://ga.jspm.io/npm:es-module-shims@2.0.10/dist/es-module-shims.js"></script>
+  <title>Panorama View</title>
   <script type="importmap">
     {
       "imports" : {
         "three" : "../node_modules/three/build/three.module.js",
-        "OrbitControls" : "../node_modules/three/examples/jsm/controls/OrbitControls.js"
+        "OrbitControls" : "../node_modules/three/examples/jsm/controls/OrbitControls.js",
+        "gsap" : "../node_modules/gsap/index.js"
       }
     }
   </script>
+  <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
+  <div id="wrap">
+    <div id="panorama_info" style="margin: 10px 0px 0px 20px;">
+      <h1>파노라마 뷰(VR360)</h1>
+      <p>파노라마 뷰는 Mesh(메쉬) 도형의 백사이드 속성을 이용하여 이미지를 360도 회전하여 보여주는 웹 페이지입니다.</p>
+      <p>버튼을 클릭하면 VR공간인 이미지를 360도 회전하여 볼 수 있습니다.</p>
+    </div>
+  </div>
+
   <script src="./js/index.js" type="module"></script>
 </body>
 
