@@ -24,7 +24,6 @@
     <div class="start">
       <p class="selectText">도형을 선택해 주세용</p>
       <div class="polygonSelectButtons">
-
         <div class="reset"></div>
         <!-- <div class="test"> dddd </div> -->
         <div class="btn_square" data-select="square">정사각형</div>
@@ -77,37 +76,38 @@
     import { startWorld } from './js/index.js';
 
     document.addEventListener('DOMContentLoaded', function () {
-      const start = document.querySelector(".start");
-      const selectBtns = document.querySelectorAll(".polygonSelectButtons [data-select]");
-      const contentArea = document.querySelector(".contentArea");
-      const controller = document.querySelector(".controllerBox");
-      const toggleBtns = controller.querySelectorAll(".controll_toggle");
-
-      let selectedBtn;
-      let selectedType;
-      let checkbox
+      const $data = {
+        start: document.querySelector(".start"),
+        selectBtns: document.querySelectorAll(".polygonSelectButtons [data-select]"),
+        selectedBtn: null,
+        type: null,
+        contentArea: document.querySelector(".contentArea"),
+        controller: document.querySelector(".controllerBox"),
+        toggleBtns: document.querySelectorAll(".controllerBox .controll_toggle"),
+        checkbox: null,
+      };
 
       // 첫 화면 버튼
-      selectBtns.forEach(function (btn) {
+      $data.selectBtns.forEach(function (btn) {
         btn.addEventListener("click", function () {
-          selectedBtn = this;
-          selectedType = this.getAttribute('data-select');
-          contentArea.setAttribute("data-type", selectedType);
+          $data.selectedBtn = this;
+          $data.type = this.getAttribute('data-select');
+          $data.contentArea.setAttribute("data-type", $data.type);
 
-          selectBtns.forEach(e => e.classList.remove("on"));
-          selectedBtn.classList.add("on");
+          $data.selectBtns.forEach(e => e.classList.remove("on"));
+          $data.selectedBtn.classList.add("on");
 
-          start.classList.add("selected");
+          $data.start.classList.add("selected");
 
-          startWorld(selectedType, selectedBtn);
+          startWorld($data);
         });
       });
 
       // 옵션박스
-      toggleBtns.forEach(function (btn) {
+      $data.toggleBtns.forEach(function (btn) {
         btn.addEventListener("change", function () {
-          checkbox = this.querySelector("input");
-          if (checkbox.checked) {
+          $data.checkbox = this.querySelector("input");
+          if ($data.checkbox.checked) {
             console.log("ON");
           } else {
             console.log("OFF");

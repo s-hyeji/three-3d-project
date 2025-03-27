@@ -3,10 +3,7 @@ import { OrbitControls } from "OrbitControls";
 import gsap from "gsap";
 
 // 처음 시작 시 애니매이션 재생 
-export function startWorld(selectedType, selectedBtn) {
- const selectBtns = document.querySelectorAll(".polygonSelectButtons [data-select]");
- console.log(selectedType, selectedBtn);
-
+export function startWorld($data) {
  gsap.to(".selectText", {
   x: -1200,
   opacity: 0,
@@ -14,7 +11,7 @@ export function startWorld(selectedType, selectedBtn) {
   duration: 0.5
  });
 
- gsap.to(selectedBtn, {
+ gsap.to($data.selectedBtn, {
   left: 417,
   top: -216,
   scale: 0.7,
@@ -22,22 +19,23 @@ export function startWorld(selectedType, selectedBtn) {
  });
 
 
- selectBtns.forEach(btn => {
-  if (btn !== selectedBtn) {
+ $data.selectBtns.forEach(btn => {
+  if (btn !== $data.selectedBtn) {
    gsap.to(btn, {
     y: 380,
     scale: 0.7,
+    opacity: 0,
     duration: 0.5,
    });
   }
  });
 
 
- if (selectedType === "square") {
+ if ($data.type === "square") {
 
- } else if (selectedType === "triangle") {
+ } else if ($data.type === "triangle") {
 
- } else if (selectedType === "circle") {
+ } else if ($data.type === "circle") {
 
  }
 }
