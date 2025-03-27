@@ -2,34 +2,31 @@ import * as THREE from "three";
 import { OrbitControls } from "OrbitControls";
 import gsap from "gsap";
 
-// 처음 시작 시 애니매이션 재생 
+let startAni;
+
 export function startWorld($data) {
- gsap.to(".selectText", {
+ startAni = gsap.timeline();
+ const otherBtns = [...$data.selectBtns].filter(btn => btn !== $data.selectedBtn);
+
+ startAni.to(".selectText", {
   x: -1200,
   opacity: 0,
   scale: 0.7,
-  duration: 0.5
- });
-
- gsap.to($data.selectedBtn, {
-  left: 417,
-  top: -216,
+  duration: 0.5,
+ }, 0).to($data.selectedBtn, {
+  left: 560,
+  top: 14,
   scale: 0.7,
-  duration: 0.5
- });
-
-
- $data.selectBtns.forEach(btn => {
-  if (btn !== $data.selectedBtn) {
-   gsap.to(btn, {
-    y: 380,
-    scale: 0.7,
-    opacity: 0,
-    duration: 0.5,
-   });
-  }
- });
-
+  duration: 0.5,
+ }, 0).to(otherBtns, {
+  y: 380,
+  scale: 0.7,
+  opacity: 0,
+  duration: 0.5,
+ }, 0).to($data.reset, {
+  left: 32,
+  duration: 0.5,
+ }, 0);
 
  if ($data.type === "square") {
 
@@ -37,5 +34,14 @@ export function startWorld($data) {
 
  } else if ($data.type === "circle") {
 
+ }
+}
+
+// 리셋 함수
+export function resetAni($data) {
+ console.log("클릭 됨");
+
+ if (startAni) {
+  startAni.reverse();
  }
 }

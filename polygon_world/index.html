@@ -24,7 +24,7 @@
     <div class="start">
       <p class="selectText">도형을 선택해 주세용</p>
       <div class="polygonSelectButtons">
-        <div class="reset"></div>
+        <div class="reset">돌아가기</div>
         <!-- <div class="test"> dddd </div> -->
         <div class="btn_square" data-select="square">정사각형</div>
         <div class="btn_triangle" data-select="triangle">정삼각형</div>
@@ -73,11 +73,12 @@
 
   <script type="text/javascript" src="../common/scale.js"></script>
   <script type="module">
-    import { startWorld } from './js/index.js';
+    import { startWorld, resetAni } from './js/index.js';
 
     document.addEventListener('DOMContentLoaded', function () {
       const $data = {
         start: document.querySelector(".start"),
+        reset: document.querySelector(".reset"),
         selectBtns: document.querySelectorAll(".polygonSelectButtons [data-select]"),
         selectedBtn: null,
         type: null,
@@ -114,6 +115,15 @@
           }
         });
       });
+
+      // 리셋
+      $data.reset.addEventListener("click", function () {
+        resetAni($data)
+        $data.selectBtns.forEach(e => e.classList.remove("on"));
+        $data.start.classList.remove("selected");
+
+
+      })
     });
   </script>
 </body>
