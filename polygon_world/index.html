@@ -21,19 +21,9 @@
 
 <body>
   <div id="wrap">
-    <div class="start">
-      <p class="selectText">도형을 선택해 주세용</p>
-      <div class="polygonSelectButtons">
-        <div class="reset">돌아가기</div>
-        <!-- <div class="test"> dddd </div> -->
-        <div class="btn_square" data-select="square">정사각형</div>
-        <div class="btn_triangle" data-select="triangle">정삼각형</div>
-        <div class="btn_circle" data-select="circle">원</div>
-      </div>
-    </div>
     <section class="contentArea">
       <fieldset class="controllerBox">
-        <legend>옵션 설정</legend>
+        <legend>옵션</legend>
         <label class="controll_toggle camera">
           <p>둘러보기</p>
           <input type="checkbox" checked>
@@ -45,7 +35,7 @@
           <span class="check_toggle"></span>
         </label>
         <label class="controll_toggle trans">
-          <p>투명</p>
+          <p>투시</p>
           <input type="checkbox">
           <span class="check_toggle"></span>
         </label>
@@ -69,6 +59,16 @@
         </div>
       </fieldset>
     </section>
+    <div class="start">
+      <p class="selectText">도형을 선택해 주세용</p>
+      <div class="polygonSelectButtons">
+        <div class="reset">돌아가기</div>
+        <!-- <div class="test"> dddd </div> -->
+        <div class="btn_square" data-select="square">정사각형</div>
+        <div class="btn_triangle" data-select="triangle">정삼각형</div>
+        <div class="btn_circle" data-select="circle">원</div>
+      </div>
+    </div>
   </div>
 
   <script type="text/javascript" src="../common/scale.js"></script>
@@ -77,15 +77,20 @@
 
     document.addEventListener('DOMContentLoaded', function () {
       const $data = {
+        // 첫 화면
         start: document.querySelector(".start"),
         reset: document.querySelector(".reset"),
         selectBtns: document.querySelectorAll(".polygonSelectButtons [data-select]"),
         selectedBtn: null,
         type: null,
+        // 옵션 설정
         contentArea: document.querySelector(".contentArea"),
         controller: document.querySelector(".controllerBox"),
         toggleBtns: document.querySelectorAll(".controllerBox .controll_toggle"),
+        colorBtn: document.querySelector(".controllerBox .select_color"),
+        colorPopup: document.querySelector(".controllerBox .sub_colorSelectBox"),
         checkbox: null,
+        selectedColor: null,
       };
 
       // 첫 화면 버튼
@@ -104,16 +109,52 @@
         });
       });
 
-      // 옵션박스
+      // 옵션 박스
+      // 토글 기능
       $data.toggleBtns.forEach(function (btn) {
         btn.addEventListener("change", function () {
           $data.checkbox = this.querySelector("input");
           if ($data.checkbox.checked) {
-            console.log("ON");
+            // console.log("ON");
           } else {
-            console.log("OFF");
+            // console.log("OFF");
           }
         });
+      });
+
+      // 컬러 셋팅 
+      const colors = [
+        "#FF5733",
+        "#FF8D33",
+        "#FFC300",
+        "#DAF7A6",
+        "#33FF57",
+        "#33FFF0",
+        "#3385FF",
+        "#5733FF",
+        "#C700FF",
+        "#FF33A8",
+        "#A6A6A6",
+        "#000000"
+      ];
+      [...$data.colorPopup.children].forEach(function (color, i) {
+        color.style.backgroundColor = colors[i];
+
+        color.addEventListener("click", function () {
+          $data.colorPopup.classList.remove("on")
+          $data.selectedColor = color.style.backgroundColor;
+          $data.colorBtn.style.backgroundColor = $data.selectedColor;
+          // console.log($data.selectedColor);
+        });
+      });
+
+      $data.colorBtn.addEventListener("click", function () {
+        if ($data.colorPopup.classList.contains("on")) {
+          $data.colorPopup.classList.remove("on")
+
+        } else {
+          $data.colorPopup.classList.add("on")
+        }
       });
 
       // 리셋
@@ -121,8 +162,10 @@
         resetAni($data)
         $data.selectBtns.forEach(e => e.classList.remove("on"));
         $data.start.classList.remove("selected");
-
-
+        setTimeout(() => {
+          $data.colorBtn.style.backgroundColor = "#A6A6A6";
+          $data.colorPopup.classList.remove("on");
+        }, 500);
       })
     });
   </script>

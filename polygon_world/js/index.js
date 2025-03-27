@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "OrbitControls";
 import gsap from "gsap";
+import $polygon from "../mesh/polygon.js";
 
 let startAni;
 
@@ -26,21 +27,16 @@ export function startWorld($data) {
  }, 0).to($data.reset, {
   left: 32,
   duration: 0.5,
- }, 0);
+ }, 1).to($data.controller, {
+  left: 30,
+  duration: 0.5,
+ }, 1);
 
- if ($data.type === "square") {
-
- } else if ($data.type === "triangle") {
-
- } else if ($data.type === "circle") {
-
- }
+ // $polygon(mesh)
 }
 
 // 리셋 함수
 export function resetAni($data) {
- console.log("클릭 됨");
-
  if (startAni) {
   startAni.reverse();
  }
