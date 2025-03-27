@@ -1,13 +1,13 @@
 
 
-* {
-  margin: 0;
-  padding: 0;
+#wrap {
+  padding: 20px;
+  user-select: none;
+  z-index: 1;
 }
 
 canvas {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
 }

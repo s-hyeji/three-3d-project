@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'OrbitControls';
-// import { GLTFLoader } from 'GLTFLoader';
-// import { FBXLoader } from 'FBXLoader'
+import { GLTFLoader } from 'GLTFLoader';
+import { FBXLoader } from 'FBXLoader'
 
 // 메서드 선언
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
 const renderer = new THREE.WebGLRenderer({ alpha: 0x000000 });
-const orbit = new OrbitControls(camera, renderer.domElement)
+const orbit = new OrbitControls(camera, renderer.domElement);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 const ambientLight = new THREE.AmbientLight(0xff0000, 1);
 
@@ -20,8 +20,6 @@ const material = new THREE.MeshBasicMaterial({
 const sphere360 = new THREE.Mesh(geometry, material);
 
 // 실행
-document.body.style.margin = '0';
-document.body.style.overflow = 'hidden';
 camera.position.set(35, 0, 20);
 camera.lookAt(0, 0, 0);
 scene.background = null;
@@ -39,9 +37,10 @@ directionalLight.position.set(-1, 2, 4);
 directionalLight.target.position.set(0, -1, 0);
 
 const animate = () => {
+  requestAnimationFrame(animate);
   renderer.render(scene, camera);
   orbit.update();
-  requestAnimationFrame(animate);
+  sphere360.rotation.y += 0.0003;
 };
 animate();
 
