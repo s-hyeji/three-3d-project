@@ -54,9 +54,9 @@ window.addEventListener('resize', () => {
 
 // 버튼 클릭 이벤트
 const buttons = new Buttons('#button_wrap button');
-buttons.btn.forEach(BTN => {
-  BTN.addEventListener('click', (btn) => {
-    buttons.clickEvent(btn, 5);
+buttons.btn.forEach(btns => {
+  btns.addEventListener('click', (event) => {
+    buttons.clickEvent(event, 5);
     material.map = new THREE.TextureLoader().load(`./images/sphere_img_0${buttons.imgNum}.jpg`);
   });
 });

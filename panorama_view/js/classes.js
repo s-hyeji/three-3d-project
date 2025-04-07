@@ -10,8 +10,8 @@ class Buttons {
   }
 
   clickEvent(e) {
-    if (e.target.id === 'prew') {
-      console.log('# Prew button!');
+    if (e.target.id === 'prev') {
+      console.log('# Prev button!');
       this.imgNum--;
       if (this.imgNum === 0) this.imgNum = 5;
     }
