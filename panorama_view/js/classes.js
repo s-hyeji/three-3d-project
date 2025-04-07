@@ -1,34 +1,25 @@
-import panoramaView from './index.js';
 
 
 
-
-class Typing {
-  constructor() {
-    this.type = 'typings';
-  }
-
-  getType() {
-    return this.type;
-  }
-}
 
 class Buttons {
-  constructor(prew, next) {
-    this.prew = document.querySelector(prew);
-    this.next = document.querySelector(next);
+  constructor(root, imgLength) {
+    this.btn = document.querySelectorAll(root);
+    this.imgNum = 1;
+    this.imgLength = imgLength;
   }
 
-  clickEvent() {
-    console.log(this);
-
-    if (this.prew) {
-      console.log('Prew button clicked!');
+  clickEvent(e) {
+    if (e.target.id === 'prew') {
+      console.log('# Prew button!');
+      this.imgNum--;
+      if (this.imgNum === 0) this.imgNum = 5;
     }
-    else if (this.next) {
-      console.log('Next button clicked!');
+
+    else if (e.target.id === 'next') {
+      console.log('# Next button!');
+      this.imgNum++;
+      if (this.imgNum === 6) this.imgNum = 1;
     }
   }
 }
-
-export default (Buttons);
