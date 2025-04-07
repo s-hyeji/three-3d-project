@@ -16,7 +16,7 @@ class Buttons {
       if (this.imgNum === 0) this.imgNum = 5;
     }
 
-    else if (e.target.id === 'next') {
+    if (e.target.id === 'next') {
       console.log('# Next button!');
       this.imgNum++;
       if (this.imgNum === 6) this.imgNum = 1;

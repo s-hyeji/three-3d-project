@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'OrbitControls';
+import showUniverse from './Mesh/universeMesh.js';
+import showShpearMesh from './Mesh/shpearMesh.js';
+import showSquareMesh from './Mesh/squareMesh.js';
 import { GLTFLoader } from 'GLTFLoader';
 import { FBXLoader } from 'FBXLoader'
 
@@ -12,23 +15,24 @@ const orbit = new OrbitControls(camera, renderer.domElement);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 const ambientLight = new THREE.AmbientLight(0xff0000, 1);
 
-// 3D오브젝트 생성 선언
-const geometry = new THREE.SphereGeometry(2000, 100, 100);
-const material = new THREE.MeshBasicMaterial({
-  map: new THREE.TextureLoader().load('./images/sphere_img_01.jpg'),
-  side: THREE.BackSide,
-});
-const sphere360 = new THREE.Mesh(geometry, material);
+
+const universeMesh = showUniverse();
+const shpearMesh = showShpearMesh();
+const squareMesh = showSquareMesh();
+scene.add(universeMesh);
+scene.add(shpearMesh);
+scene.add(squareMesh);
+
+
 
 // 실행
-camera.position.set(35, 0, 20);
+camera.position.set(100, 0, 20);
 camera.lookAt(0, 0, 0);
 scene.background = null;
 orbit.enableDamping = true;
 scene.add(new THREE.AxesHelper(10));
 // scene.add(new THREE.GridHelper(10, 10));
 scene.add(new THREE.DirectionalLightHelper(directionalLight, 1, 0xff0000));
-scene.add(sphere360);
 scene.add(ambientLight);
 scene.add(directionalLight);
 
@@ -38,12 +42,19 @@ directionalLight.position.set(-1, 2, 4);
 directionalLight.target.position.set(0, -1, 0);
 
 const animate = () => {
-  requestAnimationFrame(animate);
+  // 카메라 회전
+  let speed = Date.now() * 0.0003;
+  let ratateRadius = 80;
+  camera.position.x = Math.cos(speed) * ratateRadius;
+  camera.position.z = Math.sin(speed) * ratateRadius;
   renderer.render(scene, camera);
+  
   orbit.update();
-  sphere360.rotation.y += 0.0003;
+  requestAnimationFrame(animate);
 };
 animate();
+
+
 
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -57,6 +68,6 @@ const buttons = new Buttons('#button_wrap button');
 buttons.btn.forEach(btns => {
   btns.addEventListener('click', (event) => {
     buttons.clickEvent(event, 5);
-    material.map = new THREE.TextureLoader().load(`./images/sphere_img_0${buttons.imgNum}.jpg`);
+    shpearMesh.material.map = new THREE.TextureLoader().load(`./images/sphere_img_0${buttons.imgNum}.jpg`);
   });
 });
