@@ -2,8 +2,8 @@ import * as THREE from 'three';
 
 export default function showSquareMesh() {
   const textureLoader = new THREE.TextureLoader();
-  const frontTexture = textureLoader.load('./images/sphere_img_02.jpg');
-  const backTexture = textureLoader.load('./images/sphere_img_03.jpg');
+  const frontTexture = textureLoader.load('./images/sphere_img_01.jpg');
+  const backTexture = textureLoader.load('./images/sphere_img_01.jpg');
   const geometry = new THREE.BoxGeometry(15, 15, 15);
   
   const material = new THREE.MeshBasicMaterial({
