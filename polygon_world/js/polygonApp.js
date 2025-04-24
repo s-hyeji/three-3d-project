@@ -1,8 +1,15 @@
-import { polygonMesh } from '../mesh/polygon.js';
+import * as THREE from 'three';
+import Polygon from '../mesh/polygon.js';
 import { gsapAni } from './gsapAni.js';
+import { meshAni } from './gsapAni.js';
 
+let polygon;
+
+
+// 
 export default class PolygonApp {
- constructor() {
+ constructor(scene) {
+  this.scene = scene;
   this.startBtn = document.querySelector('.start');
   this.resetBtn = document.querySelector('.reset');
   this.selectBtns = document.querySelectorAll('.polygonSelectButtons [data-select]');
@@ -68,7 +75,15 @@ export default class PolygonApp {
    controller: this.controller,
   });
 
-  // const mesh = polygonMesh(this.selectedType);
+  this.timeline.play();
+
+  if (this.selectedType) {
+   polygon = new Polygon(this.selectedType);
+   polygon.setColor(this.selectedColor);
+   this.scene.add(polygon.mesh);
+   polygon.mesh.visible = true;
+   meshAni(polygon.mesh);
+  }
  }
 
  reset() {
@@ -78,6 +93,10 @@ export default class PolygonApp {
 
   this.selectBtns.forEach(btn => btn.classList.remove('on'));
   this.startBtn.classList.remove('selected');
+
+  if (polygon && polygon.mesh) {
+   this.scene.remove(polygon.mesh);
+  }
 
   setTimeout(() => {
    this.contentArea.setAttribute("data-type", "");

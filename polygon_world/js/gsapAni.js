@@ -1,3 +1,4 @@
+import Polygon from '../mesh/polygon.js';
 import gsap from 'gsap';
 
 export function gsapAni({ selectedBtn, selectBtns, resetBtn, controller }) {
@@ -22,10 +23,22 @@ export function gsapAni({ selectedBtn, selectBtns, resetBtn, controller }) {
  }, 0).to(resetBtn, {
   left: 32,
   duration: 0.5,
- }, 1).to(controller, {
+ }, 0.5).to(controller, {
   left: 30,
   duration: 0.5,
- }, 1);
+ }, 0.5);
 
  return tl;
+}
+
+export function meshAni(mesh) {
+ // mesh.visible = true;
+ // mesh.position.set(0, -2, 0); // 시작 위치 아래쪽
+
+ // gsap.to(mesh.position, {
+ //  y: 0, // 화면 정중앙으로
+ //  duration: 0.6,
+ //  ease: 'back.out(1.7)'
+ // });
+
 }
