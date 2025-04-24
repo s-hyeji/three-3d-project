@@ -42,20 +42,7 @@
         <div class="controll_color">
           <p>면 색상</p>
           <div class="select_color"></div>
-          <ul class="sub_colorSelectBox">
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-          </ul>
+          <div class="sub_colorSelectBox"></div>
         </div>
       </fieldset>
     </section>
@@ -72,92 +59,7 @@
   </div>
 
   <script type="text/javascript" src="../common/scale.js"></script>
-  <script type="module">
-    import { startWorld, resetAni } from './js/index.js';
-    document.addEventListener('DOMContentLoaded', function () {
-      const $data = {
-        // 첫 화면
-        start: document.querySelector(".start"),
-        reset: document.querySelector(".reset"),
-        selectBtns: document.querySelectorAll(".polygonSelectButtons [data-select]"),
-        selectedBtn: null,
-        type: null,
-        // 옵션 설정
-        contentArea: document.querySelector(".contentArea"),
-        controller: document.querySelector(".controllerBox"),
-        toggleBtns: document.querySelectorAll(".controllerBox .controll_toggle"),
-        colorBtn: document.querySelector(".controllerBox .select_color"),
-        colorPopup: document.querySelector(".controllerBox .sub_colorSelectBox"),
-        checkbox: null,
-        selectedColor: null,
-      };
-
-      // 첫 화면 버튼
-      $data.selectBtns.forEach(function (btn) {
-        btn.addEventListener("click", function () {
-          $data.selectedBtn = this;
-          $data.type = this.getAttribute('data-select');
-          $data.contentArea.setAttribute("data-type", $data.type);
-
-          $data.selectBtns.forEach(e => e.classList.remove("on"));
-          $data.selectedBtn.classList.add("on");
-
-          $data.start.classList.add("selected");
-
-          startWorld($data);
-        });
-      });
-
-      // 옵션 박스
-      // 토글 기능
-      $data.toggleBtns.forEach(function (btn) {
-        btn.addEventListener("change", function () {
-          $data.checkbox = this.querySelector("input");
-          if ($data.checkbox.checked) {
-            // console.log("ON");
-          } else {
-            // console.log("OFF");
-          }
-        });
-      });
-
-      // 컬러 셋팅 
-      const colors = [
-        "#FF5733", "#FF8D33", "#FFC300", "#DAF7A6",
-        "#33FF57", "#33FFF0", "#3385FF", "#5733FF",
-        "#C700FF", "#FF33A8", "#A6A6A6", "#000000"
-      ];
-      [...$data.colorPopup.children].forEach(function (color, i) {
-        color.style.backgroundColor = colors[i];
-
-        color.addEventListener("click", function () {
-          $data.colorPopup.classList.remove("on")
-          $data.selectedColor = color.style.backgroundColor;
-          $data.colorBtn.style.backgroundColor = $data.selectedColor;
-          // console.log($data.selectedColor);
-        });
-      });
-
-      $data.colorBtn.addEventListener("click", function () {
-        if ($data.colorPopup.classList.contains("on")) {
-          $data.colorPopup.classList.remove("on")
-
-        } else {
-          $data.colorPopup.classList.add("on")
-        }
-      });
-
-      // 리셋
-      $data.reset.addEventListener("click", function () {
-        resetAni($data)
-        $data.selectBtns.forEach(e => e.classList.remove("on"));
-        $data.start.classList.remove("selected");
-        setTimeout(() => {
-          $data.colorBtn.style.backgroundColor = "#A6A6A6";
-          $data.colorPopup.classList.remove("on");
-        }, 500);
-      })
-    });
+  <script type="module" src="./js/index.js"></script>
   </script>
 </body>
 
