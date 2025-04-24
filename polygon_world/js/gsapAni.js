@@ -1,6 +1,6 @@
 import gsap from 'gsap';
 
-export function createIntroTimeline({ selectedBtn, selectBtns, resetBtn, controller }) {
+export function gsapAni({ selectedBtn, selectBtns, resetBtn, controller }) {
  const otherBtns = [...selectBtns].filter(btn => btn !== selectedBtn);
 
  const tl = gsap.timeline();
