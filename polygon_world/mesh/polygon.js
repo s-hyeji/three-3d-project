@@ -28,7 +28,7 @@ export default class Polygon {
         break;
 
       case 'circle':
-        geometry = new THREE.SphereGeometry(1.5);
+        geometry = new THREE.SphereGeometry(1.7);
         break;
     }
     const material = new THREE.MeshStandardMaterial({ color: this.color });

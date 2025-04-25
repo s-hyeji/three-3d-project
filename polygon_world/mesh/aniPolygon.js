@@ -62,9 +62,9 @@ export function aniPolygon(type) {
     ease: 'power2.in'
    });
    gsap.to(leftMesh.scale, {
-    x: 0.2,
-    y: 0.2,
-    z: 0.2,
+    x: 0.08,
+    y: 0.08,
+    z: 0.08,
     duration: 0.8,
     ease: 'power2.in'
    });
@@ -82,9 +82,9 @@ export function aniPolygon(type) {
     ease: 'power2.in'
    });
    gsap.to(rightMesh.scale, {
-    x: 0.2,
-    y: 0.2,
-    z: 0.2,
+    x: 0.08,
+    y: 0.08,
+    z: 0.08,
     duration: 0.8,
     ease: 'power2.in'
    });
