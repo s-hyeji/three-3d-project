@@ -1,5 +1,6 @@
 #wrap {
  padding: 0 30px;
+ overflow: hidden;
 }
 
 #wrap::after {
@@ -252,12 +253,23 @@
 /* ★★★★★★★★★★★★ */
 .aniBox {
  position: absolute;
- top: 0;
- left: 0;
- width: 1280px;
+ top: 50%;
+ left: 50%;
+ width: 1340px;
  height: 720px;
+ pointer-events: none;
+ transform: translate(-50%, -50%);
+}
+
+.aniBox canvas {
+ position: absolute;
 }
 
 .polygonBox {
  position: absolute;
+ right: -732px;
+ /* right: 100px; */
+ width: 700px;
+ height: 510px;
+ outline: 1px solid;
 }

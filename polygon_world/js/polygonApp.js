@@ -1,10 +1,6 @@
 import * as THREE from 'three';
-import Polygon from '../mesh/polygon.js';
 import { gsapAni } from './gsapAni.js';
-import { meshAni } from './gsapAni.js';
-
-let polygon;
-
+import { aniPolygon } from '../mesh/aniPolygon.js';
 
 // 
 export default class PolygonApp {
@@ -23,23 +19,24 @@ export default class PolygonApp {
   this.selectedColor = null;
   this.timeline = null;
 
-  this.initColorOptions();
   this.bindEvents();
+  this.initColorOptions();
  }
 
  bindEvents() {
+  // 도형 선택택
   this.selectBtns.forEach(btn => {
    btn.addEventListener('click', () => {
     this.selectedBtn = btn;
     this.selectedType = btn.dataset.select;
-    this.selectBtns.forEach(b => b.classList.remove('on'));
-    btn.classList.add('on');
     this.contentArea.setAttribute("data-type", this.selectedType);
     this.startBtn.classList.add('selected');
+    // 
     this.start();
    });
   });
 
+  // 컬러 팝업
   this.colorBtn.addEventListener("click", () => {
    this.colorPopup.classList.toggle("on");
   });
@@ -59,6 +56,7 @@ export default class PolygonApp {
    div.classList.add("color");
    div.style.backgroundColor = color;
    this.colorPopup.appendChild(div);
+   // 컬러 선택
    div.addEventListener("click", () => {
     this.selectedColor = color;
     this.colorPopup.classList.remove("on");
@@ -78,11 +76,14 @@ export default class PolygonApp {
   this.timeline.play();
 
   if (this.selectedType) {
-   polygon = new Polygon(this.selectedType);
-   polygon.setColor(this.selectedColor);
-   this.scene.add(polygon.mesh);
-   polygon.mesh.visible = true;
-   meshAni(polygon.mesh);
+   aniPolygon(this.selectedType);
+   console.log("테스트");
+
+   // polygon = new Polygon(this.selectedType);
+   // polygon.setColor(this.selectedColor);
+   // this.scene.add(polygon.mesh);
+   // polygon.mesh.visible = true;
+   // meshAni(polygon.mesh);
   }
  }
 
@@ -94,9 +95,9 @@ export default class PolygonApp {
   this.selectBtns.forEach(btn => btn.classList.remove('on'));
   this.startBtn.classList.remove('selected');
 
-  if (polygon && polygon.mesh) {
-   this.scene.remove(polygon.mesh);
-  }
+  // if (polygon && polygon.mesh) {
+  //  this.scene.remove(polygon.mesh);
+  // }
 
   setTimeout(() => {
    this.contentArea.setAttribute("data-type", "");
