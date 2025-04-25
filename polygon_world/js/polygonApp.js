@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { gsapAni } from './gsapAni.js';
 import { aniPolygon } from '../mesh/aniPolygon.js';
 

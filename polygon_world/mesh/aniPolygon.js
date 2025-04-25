@@ -2,9 +2,6 @@ import * as THREE from 'three';
 import Polygon from './polygon.js';
 import gsap from 'gsap';
 
-// import { meshAni } from '../js/gsapAni.js';
-
-
 export function aniPolygon(type) {
  const aniBox = document.querySelector('.aniBox');
  const { clientWidth, clientHeight } = aniBox;
@@ -94,5 +91,12 @@ export function aniPolygon(type) {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
  }
+
  animate();
 }
+
+// 다음에 추가할거 정리
+// 1. gsapAni에서 start버튼들 분리 시키기
+// 2. aniPolygon 끝나고 onComplete으로 gsapAni 실행해서
+//    -> 뒤로가기/컨트룰러/playPolygon 나오게 하기
+// 
