@@ -1,10 +1,63 @@
 
 
 #wrap {
+  position: relative;
   padding: 20px;
   user-select: none;
   z-index: 1;
+  height: fit-content;
 }
+
+
+.start {
+  position: absolute;
+  bottom: 100px;
+  width: 300px;
+  font-size: 30px;
+  padding: 20px 20px 22px 20px;
+  border-radius: 50px;
+  background-color: #fff;
+}
+#shpear {left: 26.5%;}
+#square {right: 26.5%;}
+
+.start:hover {
+  background-color: red;
+  cursor: pointer;
+}
+
+
+
+
+#button_wrap {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+#button_wrap.shpear,
+#button_wrap.square{ display: flex;}
+
+
+#button_wrap.shpear > button {
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 canvas {
   position: absolute;

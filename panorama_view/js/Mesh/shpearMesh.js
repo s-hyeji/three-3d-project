@@ -1,26 +1,19 @@
 import * as THREE from 'three';
+// import * as THREE from "https://unpkg.com/three@0.108.0/build/three.module.js"; 
 
 export default function showShpearMesh() {
   const textureLoader = new THREE.TextureLoader();
-  const frontTexture = textureLoader.load('./images/sphere_img_01.jpg');
-  const backTexture = textureLoader.load('./images/sphere_img_01.jpg');
-  const geometry = new THREE.SphereGeometry(10, 10, 10);
+  const frontTexture = textureLoader.load('./images/Sphere/sphere_img_01.jpg');
+  const backTexture = textureLoader.load('./images/Sphere/sphere_img_01.jpg');
+  const geometry = new THREE.SphereGeometry(10, 20, 20);
   
   const material = new THREE.MeshBasicMaterial({
-    side: THREE.DoubleSide,
     map : frontTexture,
+    side: THREE.DoubleSide,
   });
 
-  // material.side = THREE.BackSide;
-  // material.map = backTexture;
   const shpearMesh = new THREE.Mesh(geometry, material);
-  shpearMesh.position.set(0, 0, 30);
-
-  const animate = () => {
-    requestAnimationFrame(animate);
-    shpearMesh.rotation.y += 0.003;
-  };
-  animate();
+  shpearMesh.position.set(-20, 0, 0);
 
   return shpearMesh;
 }
