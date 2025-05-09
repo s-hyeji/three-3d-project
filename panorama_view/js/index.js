@@ -40,6 +40,9 @@ class Scene_Event {
     // OrbitControls
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
     this.orbit.enableDamping = true;
+    this.orbit.rotateSpeed = -0.5;
+
+    this.isRotating = false;
   }
 
   initHelper() {
@@ -57,8 +60,10 @@ class Scene_Event {
     this.renderer.render(this.scene, this.camera);
     this.orbit.update();
 
-    this.shpearMesh.rotation.y += 0.005;
-    this.squareMesh.rotation.y += 0.005;
+    if (!this.isRotating) {
+      this.shpearMesh.rotation.y += 0.005;
+      this.squareMesh.rotation.y += 0.005;
+    }
   }
 
   windowResize() {
@@ -66,16 +71,13 @@ class Scene_Event {
       this.camera.aspect = window.innerWidth / window.innerHeight;
       this.camera.updateProjectionMatrix();
       this.renderer.setSize(window.innerWidth, window.innerHeight);
-
     });
   }
-
-
 }
 
 
 
-class View_Event {
+class Mouse_Event {
   constructor(root, imgLength) {
     this.container = document.querySelector(root);
 
@@ -87,29 +89,27 @@ class View_Event {
     this.objectWrap = this.container.querySelector('#object_wrap')
     this.buttons = this.container.querySelectorAll('button');
 
-
     this.imgLength = imgLength;
     this.shprearNum = 1;
     this.squareNum = 1;
 
     this.hoverCheck = false;
     this.leaveCheck = false;
-    this.clickCheck = false;
+    this.isDblclick = false;
+
+    this.timeLine_H = gsap.timeline();
+    this.timeLine_L = gsap.timeline();
+    this.timeLine_C = gsap.timeline();
 
     this.clickEvent();
     this.startWrap_btns.forEach((buttons) => { buttons.addEventListener('mouseover', (event) => { this.hoverEvent(event); }); })
     this.startWrap.addEventListener('mouseleave', (event) => { this.LeaveEvent(event); });
-
-    this.timeLine_H = gsap.timeline();
-    this.timeLine_C = gsap.timeline();
+    document.addEventListener('dblclick', () => { this.downEvent(); });
+    document.addEventListener('contextmenu', () => { this.contextmenuEvent(); });
   }
 
-
-  requestAnimation() {
-    requestAnimationFrame(() => this.requestAnimation());
-    this.orbit.update();
-  }
-
+  downEvent() { this.container.style.pointerEvents = 'none'; }
+  contextmenuEvent() { this.container.style.pointerEvents = 'auto'; }
 
   hoverEvent(event) {
     this.hoverCheck = true;
@@ -117,38 +117,17 @@ class View_Event {
     console.log(this.event, '# 마우스 HOVER!');
 
     if (!this.hoverCheck) return;
-    if (this.event.target.id === 'shpear') {
-      this.timeLine_H
-        .to(this.shpearBtn, { duration: 0.3, scale: 1.4, x: 190 })
-        .to(this.squareBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
-        .to(scene_V.shpearMesh.position, { duration: 0.3, x: 0, y: 15, z: 50 }, '<')
-    }
-
-    if (this.event.target.id === 'square') {
-      this.timeLine_H
-        .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -190 })
-        .to(this.shpearBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
-        .to(scene_V.squareMesh.position, { duration: 0.3, x: 0, y: 15, z: 48 }, '<')
-    }
+    if (this.event.target.id === 'shpear') this.shpearHoverAct();
+    if (this.event.target.id === 'square') this.squareHoverAct();
   }
-
 
   LeaveEvent(event) {
     this.leaveCheck = true;
     if (!this.leaveCheck) return;
     this.event = event;
     console.log(this.event, '# 마우스 LEAVE!');
-    this.hoverCheck = false;
-
-    this.timeLine_H
-      .to(this.shpearBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 })
-      .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 }, '<')
-      .to(scene_V.shpearMesh.position, { x: -20, y: 0, z: 0 }, '<')
-      .to(scene_V.squareMesh.position, { x: 20, y: 0, z: 0 }, '<')
+    this.objectLeaveAct();
   }
-
-
-
 
   clickEvent() {
     this.buttons.forEach((event) => {
@@ -156,30 +135,28 @@ class View_Event {
         this.button = button;
         this.hoverCheck = false;
         console.log(this.button, '# 마우스 CLICK!');
-        
+
+
         // 시작 버튼들
         if (this.button.target.parentNode.id === 'start_wrap') {
           this.startWrap.classList.add('displayN');
+          setTimeout(() => { this.objectWrap.classList.add(`${this.button.target.id}`); }, 2000)
 
-          if (this.button.target.id === 'shpear') {
-            console.log('# 원 버튼!');
-            setTimeout(() => { this.objectWrap.classList.add('shpear'); }, 2000)
+          if (this.button.target.id === 'shpear') this.shpearClickAct().restart();
+          if (this.button.target.id === 'square') this.squareClickAct().restart();
 
-            this.timeLine_C
-              .to(scene_V.shpearMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
-              .to(scene_V.squareMesh.position, { duration: 0.7, x: 200, y: 20, z: 0 }, '<')
-              .to(scene_V.camera.position, { duration: 0.5, x: 0, y: 0, z: 0 }, '+1')
-          }
-
-          if (this.button.target.id === 'square') {
-            console.log('# 박스 버튼!');
-          }
+          this.timeLine_C.eventCallback('onUpdate', () => { this.container.style.pointerEvents = 'none'; })
+          this.timeLine_C.eventCallback('onComplete', () => {
+            scene_E.isRotating = true;
+            this.container.style.pointerEvents = 'auto';
+          })
         }
 
-        // 오브젝트들 내 버튼
+
+        // 오브젝트들 내 버튼들
         if (this.button.target.id === 'prev') {
           console.log('# Prev button!');
-          switch (this.container.classList.value) {
+          switch (this.objectWrap.classList.value) {
             case 'shpear': this.shprearNum--; break;
             case 'square': this.squareNum--; break;
           }
@@ -187,28 +164,87 @@ class View_Event {
           if (this.squareNum === 0) this.squareNum = this.imgLength;
         }
 
+
         if (this.button.target.id === 'next') {
           console.log('# Next button!');
-          switch (this.container.classList.value) {
+          switch (this.objectWrap.classList.value) {
             case 'shpear': this.shprearNum++; break;
             case 'square': this.squareNum++; break;
           }
           if (this.shprearNum === this.imgLength + 1) this.shprearNum = 1;
           if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
         }
+
+
+        if (this.button.target.id === 'return') {
+          console.log('# Return button!');
+          scene_E.isRotating = false;
+          this.objectWrap.className = '';
+          this.shprearNum, this.squareNum = 1;
+          this.startWrap.classList.remove('displayN');
+
+          if (this.objectWrap.classList.value === 'shpear') this.shpearClickAct().reverse();
+          else this.squareClickAct().reverse();
+
+          this.timeLine_C.eventCallback('onReverseComplete', () => {
+            this.container.style.pointerEvents = 'auto';
+            this.timeLine_C.clear();
+          })
+        }
       })
     });
-    // console.log(`# 구 이미지 ${this.shprearNum}번 ||`, `정사각형 이미지 ${this.squareNum}번`);
+  }
+
+
+
+  shpearHoverAct() {
+    this.timeLine_H
+      .to(this.shpearBtn, { duration: 0.3, scale: 1.4, x: 180 })
+      .to(this.squareBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
+      .to(scene_E.shpearMesh.position, { duration: 0.5, x: 0, y: 15, z: 50, ease: "power4.inOut", }, '<')
+  }
+
+  squareHoverAct() {
+    this.timeLine_H
+      .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180 })
+      .to(this.shpearBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
+      .to(scene_E.squareMesh.position, { duration: 0.5, x: 0, y: 15, z: 48, ease: "power4.inOut", }, '<')
+  }
+
+  objectLeaveAct() {
+    this.timeLine_L
+      .to(this.shpearBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 })
+      .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 }, '<')
+      .to(scene_E.shpearMesh.position, { x: -20, y: 0, z: 0, ease: "power4.inOut", }, '<')
+      .to(scene_E.squareMesh.position, { x: 20, y: 0, z: 0, ease: "power4.inOut", }, '<')
+    this.timeLine_L.eventCallback('onComplete', () => {
+      scene_E.shpearMesh.position.set(-20, 0, 0);
+      scene_E.squareMesh.position.set(20, 0, 0);
+    })
+  }
+
+  shpearClickAct() {
+    this.timeLine_C
+      .to(scene_E.shpearMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
+      .to(scene_E.squareMesh.position, { duration: 0.7, x: 200, y: 20, z: 0 }, '<')
+      .to(scene_E.camera.position, { duration: 1.2, x: 0, y: 0, z: 1, ease: "power2.inOut", }, '+1')
+    return this.timeLine_C;
+  }
+
+  squareClickAct() {
+    this.timeLine_C
+      .to(scene_E.squareMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
+      .to(scene_E.shpearMesh.position, { duration: 0.7, x: -200, y: 20, z: 0 }, '<')
+      .to(scene_E.camera.position, { duration: 1.2, x: 0, y: 0, z: 1, ease: "power2.inOut", }, '+1')
+    return this.timeLine_C;
   }
 }
 
 
-
-
-const scene_V = new Scene_Event();
-const click_E = new View_Event('#wrap', 5);
-console.log('# project_view', scene_V);
-console.log('# click_view', click_E);
+const scene_E = new Scene_Event();
+const mouse_E = new Mouse_Event('#wrap', 5);
+console.log('# Scene_Event', scene_E);
+console.log('# Mouse_Event', mouse_E);
 
 
 

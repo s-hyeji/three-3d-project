@@ -9,20 +9,26 @@ button {cursor: pointer;}
   z-index: 1;
 }
 
-
-.start {
+#start_wrap {
+  display: flex;
+  gap: 50px;
   position: absolute;
   bottom: 100px;
+  left: 50%;
+  translate: -50%;
+  width: fit-content;
+}
+
+#start_wrap > button {
+  position: relative;
   width: 300px;
   font-size: 30px;
   padding: 20px 20px 22px 20px;
   border-radius: 50px;
   background-color: #fff;
 }
-#shpear {left: 24%;}
-#square {right: 24%;}
 
-.start:hover {
+#start_wrap > button:hover {
   background-color: red;
 }
 
@@ -43,7 +49,7 @@ button {cursor: pointer;}
 #object_wrap.square{ display: flex;}
 
 
-#object_wrap.shpear > button {
+#object_wrap > button {
   width: 300px;
   font-size: 30px;
   padding: 20px 20px 22px 20px;
@@ -51,7 +57,7 @@ button {cursor: pointer;}
   background-color: #fff;
 }
 
-#object_wrap.shpear > button:hover {
+#object_wrap > button:hover {
   background-color: red;
 }
 
