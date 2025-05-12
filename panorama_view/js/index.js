@@ -45,13 +45,18 @@ class Scene_Event {
       textureLoader.load('./images/Sphere/interior/sphere_img_04.jpg'),
       textureLoader.load('./images/Sphere/interior/sphere_img_05.jpg'),
     ]
-    
+
     for (let i = 0; i < this.frontTexture_circle.length; i++) {
-      this.frontTexture_circle[i];
-      this.backTexture_circle[i];
-      this.frontTexture_box[i];
-      this.backTexture_box[i];
+      this.frontTexture_circle[i].colorSpace = THREE.SRGBColorSpace;
+      this.backTexture_circle[i].colorSpace = THREE.SRGBColorSpace;
+      this.frontTexture_box[i].colorSpace = THREE.SRGBColorSpace;
+      this.backTexture_box[i].colorSpace = THREE.SRGBColorSpace;
     }
+
+    this.shpearMesh.children[0].material.map = this.frontTexture_circle[0];
+    this.shpearMesh.children[1].material.map = this.backTexture_circle[0];
+    this.squareMesh.children[0].material.map = this.frontTexture_box[0];
+    this.squareMesh.children[1].material.map = this.backTexture_box[0];
 
     this.init();
     this.initHelper();
@@ -266,10 +271,10 @@ class Mouse_Event {
       .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 }, '<')
       .to(scene_E.shpearMesh.position, { x: -20, y: 0, z: 0, ease: "power4.inOut", }, '<')
       .to(scene_E.squareMesh.position, { x: 20, y: 0, z: 0, ease: "power4.inOut", }, '<')
-    this.timeLine_L.eventCallback('onComplete', () => {
-      scene_E.shpearMesh.position.set(-20, 0, 0);
-      scene_E.squareMesh.position.set(20, 0, 0);
-    })
+    // this.timeLine_L.eventCallback('onComplete', () => {
+    //   scene_E.shpearMesh.position.set(-20, 0, 0);
+    //   scene_E.squareMesh.position.set(20, 0, 0);
+    // })
   }
 
   shpearClickAct() {
