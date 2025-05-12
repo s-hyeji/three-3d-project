@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../common/common.css">
   <link rel="stylesheet" href="./css/index.css">
 
-  <script type="importmap">
+  <!-- <script type="importmap">
     {
       "imports" : {
         "three" : "../../node_modules/three/build/three.module.js",
@@ -16,7 +16,16 @@
         "gsap" : "../../node_modules/gsap/index.js"
       }
     }
-  </script>
+  </script> -->
+  <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+          "OrbitControls": "https://unpkg.com/three@0.158.0/examples/jsm/controls/OrbitControls.js",
+          "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/index.js"
+        }
+      }
+      </script>
 </head>
 
 <body>
