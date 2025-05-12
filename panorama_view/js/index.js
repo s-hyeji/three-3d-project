@@ -1,11 +1,9 @@
-// import * as THREE from "https://unpkg.com/three@0.108.0/build/three.module.js"; 
 import * as THREE from 'three';
 import { OrbitControls } from "OrbitControls";
 import { gsap } from 'gsap';
 import showUniverse from './Mesh/universeMesh.js';
 import showShpearMesh from './Mesh/shpearMesh.js';
 import showSquareMesh from './Mesh/squareMesh.js';
-
 
 class Scene_Event {
   constructor() {
@@ -14,6 +12,46 @@ class Scene_Event {
     this.universeMesh = showUniverse();
     this.shpearMesh = showShpearMesh();
     this.squareMesh = showSquareMesh();
+
+    const textureLoader = new THREE.TextureLoader();
+    this.frontTexture_circle = [
+      textureLoader.load('./images/Sphere/exterior/sphere_img_01.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_02.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_03.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_04.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_05.jpg'),
+    ]
+
+    this.backTexture_circle = [
+      textureLoader.load('./images/Sphere/interior/sphere_img_01.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_02.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_03.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_04.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_05.jpg'),
+    ]
+
+    this.frontTexture_box = [
+      textureLoader.load('./images/Sphere/exterior/sphere_img_01.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_02.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_03.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_04.jpg'),
+      textureLoader.load('./images/Sphere/exterior/sphere_img_05.jpg'),
+    ]
+
+    this.backTexture_box = [
+      textureLoader.load('./images/Sphere/interior/sphere_img_01.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_02.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_03.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_04.jpg'),
+      textureLoader.load('./images/Sphere/interior/sphere_img_05.jpg'),
+    ]
+    
+    for (let i = 0; i < this.frontTexture_circle.length; i++) {
+      this.frontTexture_circle[i];
+      this.backTexture_circle[i];
+      this.frontTexture_box[i];
+      this.backTexture_box[i];
+    }
 
     this.init();
     this.initHelper();
@@ -36,6 +74,7 @@ class Scene_Event {
     this.renderer = new THREE.WebGLRenderer({ alpha: 0xffffff });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
+    // mouse_E.container.appendChild(this.renderer.domElement);
 
     // OrbitControls
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -136,7 +175,6 @@ class Mouse_Event {
         this.hoverCheck = false;
         console.log(this.button, '# 마우스 CLICK!');
 
-
         // 시작 버튼들
         if (this.button.target.parentNode.id === 'start_wrap') {
           this.startWrap.classList.add('displayN');
@@ -152,6 +190,21 @@ class Mouse_Event {
           })
         }
 
+        if (this.button.target.id === 'return') {
+          console.log('# Return button!');
+          scene_E.isRotating = false;
+          this.objectWrap.className = '';
+          this.shprearNum, this.squareNum = 1;
+          this.startWrap.classList.remove('displayN');
+
+          if (this.objectWrap.classList.value === 'shpear') this.shpearClickAct().reverse();
+          else this.squareClickAct().reverse();
+
+          this.timeLine_C.eventCallback('onReverseComplete', () => {
+            this.container.style.pointerEvents = 'auto';
+            this.timeLine_C.clear();
+          })
+        }
 
         // 오브젝트들 내 버튼들
         if (this.button.target.id === 'prev') {
@@ -175,27 +228,23 @@ class Mouse_Event {
           if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
         }
 
+        scene_E.shpearMesh.frontTexture = scene_E.frontTexture_circle[this.shprearNum - 1];
+        scene_E.shpearMesh.backTexture = scene_E.backTexture_circle[this.shprearNum - 1];
+        scene_E.squareMesh.frontTexture = scene_E.frontTexture_box[this.squareNum - 1];
+        scene_E.squareMesh.backTexture = scene_E.backTexture_box[this.squareNum - 1];
 
-        if (this.button.target.id === 'return') {
-          console.log('# Return button!');
-          scene_E.isRotating = false;
-          this.objectWrap.className = '';
-          this.shprearNum, this.squareNum = 1;
-          this.startWrap.classList.remove('displayN');
+        let curCircleMesh = scene_E.shpearMesh.children;
+        let curBoxMesh = scene_E.squareMesh.children;
+        for (let i = 0; i < curCircleMesh.length; i++) {
+          if (curCircleMesh[i].name === 'backCircleMesh') curCircleMesh[1].material.map = scene_E.shpearMesh.backTexture;
+          else curCircleMesh[0].material.map = scene_E.shpearMesh.frontTexture;
 
-          if (this.objectWrap.classList.value === 'shpear') this.shpearClickAct().reverse();
-          else this.squareClickAct().reverse();
-
-          this.timeLine_C.eventCallback('onReverseComplete', () => {
-            this.container.style.pointerEvents = 'auto';
-            this.timeLine_C.clear();
-          })
+          if (curBoxMesh[i].name === 'backBoxMesh') curBoxMesh[1].material.map = scene_E.squareMesh.backTexture;
+          else curBoxMesh[0].material.map = scene_E.squareMesh.frontTexture;
         }
       })
     });
   }
-
-
 
   shpearHoverAct() {
     this.timeLine_H
@@ -226,16 +275,16 @@ class Mouse_Event {
   shpearClickAct() {
     this.timeLine_C
       .to(scene_E.shpearMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
-      .to(scene_E.squareMesh.position, { duration: 0.7, x: 200, y: 20, z: 0 }, '<')
-      .to(scene_E.camera.position, { duration: 1.2, x: 0, y: 0, z: 1, ease: "power2.inOut", }, '+1')
+      .to(scene_E.squareMesh.position, { duration: 0.7, x: 300, y: 20, z: 0 }, '<')
+      .to(scene_E.camera.position, { duration: 1.2, x: 0, y: 0, z: 1, ease: "power2.inOut" }, '<')
     return this.timeLine_C;
   }
 
   squareClickAct() {
     this.timeLine_C
       .to(scene_E.squareMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
-      .to(scene_E.shpearMesh.position, { duration: 0.7, x: -200, y: 20, z: 0 }, '<')
-      .to(scene_E.camera.position, { duration: 1.2, x: 0, y: 0, z: 1, ease: "power2.inOut", }, '+1')
+      .to(scene_E.shpearMesh.position, { duration: 0.7, x: -300, y: 20, z: 0 }, '<')
+      .to(scene_E.camera.position, { duration: 1.2, x: 0, y: 0, z: 1, ease: "power2.inOut" }, '<')
     return this.timeLine_C;
   }
 }
