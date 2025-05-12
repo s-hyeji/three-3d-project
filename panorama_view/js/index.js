@@ -65,21 +65,21 @@ class Scene_Event {
   }
 
   init() {
+    // scene
     this.scene.background = null;
     this.scene.add(this.universeMesh);
     this.scene.add(this.shpearMesh);
     this.scene.add(this.squareMesh);
 
-    // 카메라
+    // camera
     this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
     this.camera.position.set(0, 20, 70);
     this.camera.lookAt(0, 0, 0);
 
-    // 랜더링
+    // renderer
     this.renderer = new THREE.WebGLRenderer({ alpha: 0xffffff });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(this.renderer.domElement);
-    // mouse_E.container.appendChild(this.renderer.domElement);
 
     // OrbitControls
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -92,15 +92,10 @@ class Scene_Event {
   initHelper() {
     this.scene.add(new THREE.AxesHelper(20));
     this.scene.add(new THREE.GridHelper(50));
-    // this.scene.add(new THREE.DirectionalLightHelper(this.directionalLight));
   }
 
   requestAnimation() {
     requestAnimationFrame(() => this.requestAnimation());
-    // let speed = Date.now() * 0.0005;
-    // let ratateRadius = 80;
-    // this.camera.position.x = Math.cos(speed) * ratateRadius;
-    // this.camera.position.z = Math.sin(speed) * ratateRadius;
     this.renderer.render(this.scene, this.camera);
     this.orbit.update();
 
@@ -195,21 +190,7 @@ class Mouse_Event {
           })
         }
 
-        if (this.button.target.id === 'return') {
-          console.log('# Return button!');
-          scene_E.isRotating = false;
-          this.objectWrap.className = '';
-          this.shprearNum, this.squareNum = 1;
-          this.startWrap.classList.remove('displayN');
 
-          if (this.objectWrap.classList.value === 'shpear') this.shpearClickAct().reverse();
-          else this.squareClickAct().reverse();
-
-          this.timeLine_C.eventCallback('onReverseComplete', () => {
-            this.container.style.pointerEvents = 'auto';
-            this.timeLine_C.clear();
-          })
-        }
 
         // 오브젝트들 내 버튼들
         if (this.button.target.id === 'prev') {
@@ -246,6 +227,23 @@ class Mouse_Event {
 
           if (curBoxMesh[i].name === 'backBoxMesh') curBoxMesh[1].material.map = scene_E.squareMesh.backTexture;
           else curBoxMesh[0].material.map = scene_E.squareMesh.frontTexture;
+        }
+
+        // 돌아 가기
+        if (this.button.target.id === 'return') {
+          console.log('# Return button!');
+          scene_E.isRotating = false;
+          this.objectWrap.className = '';
+          this.shprearNum, this.squareNum = 1;
+          this.startWrap.classList.remove('displayN');
+
+          if (this.objectWrap.classList.value === 'shpear') this.shpearClickAct().reverse();
+          else this.squareClickAct().reverse();
+
+          this.timeLine_C.eventCallback('onReverseComplete', () => {
+            this.container.style.pointerEvents = 'auto';
+            this.timeLine_C.clear();
+          })
         }
       })
     });
@@ -296,7 +294,7 @@ class Mouse_Event {
 
 
 const scene_E = new Scene_Event();
-const mouse_E = new Mouse_Event('#wrap', 5);
+const mouse_E = new Mouse_Event('#wrap', scene_E.frontTexture_circle.length);
 console.log('# Scene_Event', scene_E);
 console.log('# Mouse_Event', mouse_E);
 
