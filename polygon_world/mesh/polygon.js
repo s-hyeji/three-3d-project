@@ -18,20 +18,24 @@ export default class Polygon {
         geometry = new THREE.BoxGeometry(2.5, 2.5, 2.5);
         break;
 
-      case 'triangle':
-        const triangleShape = new THREE.Shape();
-        triangleShape.moveTo(0, 1.5); // top (정삼각형 높이)
-        triangleShape.lineTo(-2, -2); // bottom left
-        triangleShape.lineTo(2, -2); // bottom right
-        triangleShape.lineTo(0, 1.5); // close
-        geometry = new THREE.ShapeGeometry(triangleShape);
+      case 'triangle': {
+        geometry = new THREE.TetrahedronGeometry(2);
+        geometry.rotateY(Math.PI / 4);
+        geometry.rotateX(Math.PI / 5);
+        geometry.rotateZ(Math.PI);
         break;
+      }
 
       case 'circle':
         geometry = new THREE.SphereGeometry(1.7);
         break;
     }
-    const material = new THREE.MeshStandardMaterial({ color: this.color });
+    const material = new THREE.MeshStandardMaterial({
+      color: this.color,
+      // roughness: 0.3,
+      // metalness: 0.1,
+      side: THREE.DoubleSide
+    });
     this.mesh = new THREE.Mesh(geometry, material);
     this.mesh.visible = false;
   }

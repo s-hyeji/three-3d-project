@@ -2,7 +2,9 @@ import * as THREE from 'three';
 import Polygon from './polygon.js';
 import gsap from 'gsap';
 
-export function aniPolygon(type) {
+let tl2Reset = null;
+
+export function aniPolygon(type, resetBtn, controller) {
  const aniBox = document.querySelector('.aniBox');
  const { clientWidth, clientHeight } = aniBox;
 
@@ -28,7 +30,7 @@ export function aniPolygon(type) {
 
  const polygon = new Polygon(type);
  const mesh = polygon.getMesh();
- mesh.position.set(0, 5, 0);
+ mesh.position.set(0, 6, 0);
  mesh.visible = true;
  scene.add(mesh);
 
@@ -83,10 +85,47 @@ export function aniPolygon(type) {
     y: 0.08,
     z: 0.08,
     duration: 0.8,
-    ease: 'power2.in'
-   });
+    ease: 'power2.in',
+
+    onComplete: () => {
+     const tl2 = gsap.timeline();
+
+     tl2.to(".polygonBox", {
+      right: 100,
+      duration: 3,
+      ease: "power2.out",
+     }, 0)
+      .to(resetBtn, {
+       left: 32,
+       duration: 0.5
+      }, 2.5)
+      .to(controller, {
+       left: 30,
+       duration: 0.5
+      }, "<");
+
+    }
+   })
+
+   // ✅ 리셋용 빠른 되돌리기 애니메이션 따로 저장
+   tl2Reset = gsap.timeline({ paused: true });
+   tl2Reset.to(".polygonBox", {
+    right: -732,
+    duration: 0.5,
+    ease: "power2.out",
+   }, 0)
+    .to(resetBtn, {
+     left: -110,
+     duration: 0.5
+    }, 0)
+    .to(controller, {
+     left: -330,
+     duration: 0.5
+    }, 0);
   }
  });
+
+
  function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
@@ -95,8 +134,6 @@ export function aniPolygon(type) {
  animate();
 }
 
-// 다음에 추가할거 정리
-// 1. gsapAni에서 start버튼들 분리 시키기
-// 2. aniPolygon 끝나고 onComplete으로 gsapAni 실행해서
-//    -> 뒤로가기/컨트룰러/playPolygon 나오게 하기
-// 
+export function playResetPolygonBox() {
+ if (tl2Reset) tl2Reset.restart();
+}

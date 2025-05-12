@@ -1,5 +1,7 @@
+import gsap from 'gsap';
+
 import { gsapAni } from './gsapAni.js';
-import { aniPolygon } from '../mesh/aniPolygon.js';
+import { playResetPolygonBox } from '../mesh/aniPolygon.js';
 
 // 
 export default class PolygonApp {
@@ -17,6 +19,7 @@ export default class PolygonApp {
   this.selectedType = null;
   this.selectedColor = null;
   this.timeline = null;
+  this.subTimeline = null;
 
   this.bindEvents();
   this.initColorOptions();
@@ -40,6 +43,7 @@ export default class PolygonApp {
    this.colorPopup.classList.toggle("on");
   });
 
+  // 리셋
   this.resetBtn.addEventListener("click", () => this.reset());
  }
 
@@ -70,27 +74,13 @@ export default class PolygonApp {
    selectBtns: this.selectBtns,
    resetBtn: this.resetBtn,
    controller: this.controller,
+   selectedType: this.selectedType
   });
-
-  this.timeline.play();
-
-  if (this.selectedType) {
-   aniPolygon(this.selectedType);
-   console.log("테스트");
-
-   // polygon = new Polygon(this.selectedType);
-   // polygon.setColor(this.selectedColor);
-   // this.scene.add(polygon.mesh);
-   // polygon.mesh.visible = true;
-   // meshAni(polygon.mesh);
-  }
  }
 
  reset() {
-  if (this.timeline) {
-   this.timeline.reverse();
-  }
-
+  playResetPolygonBox();
+  setTimeout(() => { this.timeline.reverse(); }, 550);
   this.selectBtns.forEach(btn => btn.classList.remove('on'));
   this.startBtn.classList.remove('selected');
 
