@@ -156,6 +156,7 @@ class Mouse_Event {
     console.log(this.event, '# 마우스 HOVER!');
 
     if (!this.hoverCheck) return;
+    this.event.target.classList.add('on');
     if (this.event.target.id === 'shpear') this.shpearHoverAct();
     if (this.event.target.id === 'square') this.squareHoverAct();
   }
@@ -164,6 +165,7 @@ class Mouse_Event {
     this.leaveCheck = true;
     if (!this.leaveCheck) return;
     this.event = event;
+    this.startWrap_btns.forEach((btns) => { btns.classList.remove('on'); });
     console.log(this.event, '# 마우스 LEAVE!');
     this.objectLeaveAct();
   }
@@ -190,6 +192,27 @@ class Mouse_Event {
           })
         }
 
+        if (this.button.target.className === 'prev on') {
+          console.log(this.button.target.parentNode.id);
+
+          switch (this.button.target.parentNode.id) {
+            case 'shpear': this.shprearNum--; break;
+            case 'square': this.squareNum--; break;
+          }
+          if (this.shprearNum === 0) this.shprearNum = this.imgLength;
+          if (this.squareNum === 0) this.squareNum = this.imgLength;
+        }
+        if (this.button.target.className === 'next on') {
+          switch (this.button.target.parentNode.id) {
+            case 'shpear': this.shprearNum++; break;
+            case 'square': this.squareNum++; break;
+          }
+          if (this.shprearNum === this.imgLength + 1) this.shprearNum = 1;
+          if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
+        }
+        scene_E.shpearMesh.frontTexture = scene_E.frontTexture_circle[this.shprearNum - 1];
+        scene_E.squareMesh.frontTexture = scene_E.frontTexture_box[this.squareNum - 1];
+
 
 
         // 오브젝트들 내 버튼들
@@ -214,9 +237,7 @@ class Mouse_Event {
           if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
         }
 
-        scene_E.shpearMesh.frontTexture = scene_E.frontTexture_circle[this.shprearNum - 1];
         scene_E.shpearMesh.backTexture = scene_E.backTexture_circle[this.shprearNum - 1];
-        scene_E.squareMesh.frontTexture = scene_E.frontTexture_box[this.squareNum - 1];
         scene_E.squareMesh.backTexture = scene_E.backTexture_box[this.squareNum - 1];
 
         let curCircleMesh = scene_E.shpearMesh.children;
@@ -251,22 +272,22 @@ class Mouse_Event {
 
   shpearHoverAct() {
     this.timeLine_H
-      .to(this.shpearBtn, { duration: 0.3, scale: 1.4, x: 180 })
+      .to(this.shpearBtn, { duration: 0.3, scale: 1.4, x: 180, width: 700, color: "transparent" })
       .to(this.squareBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
       .to(scene_E.shpearMesh.position, { duration: 0.5, x: 0, y: 15, z: 50, ease: "power4.inOut", }, '<')
   }
 
   squareHoverAct() {
     this.timeLine_H
-      .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180 })
+      .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180, width: 700, color: "transparent" })
       .to(this.shpearBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
       .to(scene_E.squareMesh.position, { duration: 0.5, x: 0, y: 15, z: 48, ease: "power4.inOut", }, '<')
   }
 
   objectLeaveAct() {
     this.timeLine_L
-      .to(this.shpearBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 })
-      .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0 }, '<')
+      .to(this.shpearBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300, color: "#000" })
+      .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300, color: "#000" }, '<')
       .to(scene_E.shpearMesh.position, { x: -20, y: 0, z: 0, ease: "power4.inOut", }, '<')
       .to(scene_E.squareMesh.position, { x: 20, y: 0, z: 0, ease: "power4.inOut", }, '<')
     // this.timeLine_L.eventCallback('onComplete', () => {

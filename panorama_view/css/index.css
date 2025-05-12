@@ -29,10 +29,30 @@ button {cursor: pointer;}
 }
 
 #start_wrap > button:hover {
-  background-color: red;
+  background-color: #ccc;
 }
 
-
+#start_wrap > button > span {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  width: 70px;
+  background-color: yellowgreen;
+  border-radius: 50px 10px 10px 50px;
+  color: #000;
+  font-size: 30px;
+  outline: 1px solid;
+}
+#start_wrap > button.on > span {display: flex;}
+#start_wrap > button > span:nth-last-of-type(1) {
+  left: unset;
+  right: 10px;
+  border-radius: 10px 50px 50px 10px;
+}
 
 
 #object_wrap {
