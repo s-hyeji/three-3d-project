@@ -92,14 +92,14 @@ export function aniPolygon(type, resetBtn, controller) {
 
           tl2.to(".polygonBox", {
             right: 100,
-            duration: 3,
+            duration: 2,
             ease: "power2.out",
             onComplete: () => {
               tl2.fromTo(".polygonBox", {
                 boxShadow: "0 0 10px 0px rgba(255, 118, 148, 0)"
               }, {
                 boxShadow: "0 0 10px 0px rgba(255, 118, 148, 1)",
-                duration: 0.8,
+                duration: 0.5,
                 ease: "power2.out"
               });
             }
@@ -107,7 +107,7 @@ export function aniPolygon(type, resetBtn, controller) {
             .to(resetBtn, {
               left: 32,
               duration: 0.5
-            }, 3.5)
+            }, 2)
             .to(controller, {
               left: 30,
               duration: 0.5
