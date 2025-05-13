@@ -271,5 +271,7 @@
  /* right: 100px; */
  width: 700px;
  height: 510px;
- outline: 1px solid;
+ border-radius: 10px;
+ /* box-shadow: 0 0 10px #FF7694; */
+ /* outline: 1px solid; */
 }
