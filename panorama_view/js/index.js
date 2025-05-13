@@ -13,53 +13,9 @@ class Scene_Event {
     this.shpearMesh = showShpearMesh();
     this.squareMesh = showSquareMesh();
 
-    const textureLoader = new THREE.TextureLoader();
-    this.frontTexture_circle = [
-      textureLoader.load('./images/Sphere/exterior/sphere_img_01.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_02.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_03.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_04.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_05.jpg'),
-    ]
-
-    this.backTexture_circle = [
-      textureLoader.load('./images/Sphere/interior/sphere_img_01.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_02.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_03.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_04.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_05.jpg'),
-    ]
-
-    this.frontTexture_box = [
-      textureLoader.load('./images/Sphere/exterior/sphere_img_01.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_02.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_03.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_04.jpg'),
-      textureLoader.load('./images/Sphere/exterior/sphere_img_05.jpg'),
-    ]
-
-    this.backTexture_box = [
-      textureLoader.load('./images/Sphere/interior/sphere_img_01.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_02.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_03.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_04.jpg'),
-      textureLoader.load('./images/Sphere/interior/sphere_img_05.jpg'),
-    ]
-
-    for (let i = 0; i < this.frontTexture_circle.length; i++) {
-      this.frontTexture_circle[i].colorSpace = THREE.SRGBColorSpace;
-      this.backTexture_circle[i].colorSpace = THREE.SRGBColorSpace;
-      this.frontTexture_box[i].colorSpace = THREE.SRGBColorSpace;
-      this.backTexture_box[i].colorSpace = THREE.SRGBColorSpace;
-    }
-
-    this.shpearMesh.children[0].material.map = this.frontTexture_circle[0];
-    this.shpearMesh.children[1].material.map = this.backTexture_circle[0];
-    this.squareMesh.children[0].material.map = this.frontTexture_box[0];
-    this.squareMesh.children[1].material.map = this.backTexture_box[0];
-
     this.init();
     this.initHelper();
+    this.imagesPreLoad();
     this.requestAnimation();
     this.windowResize();
   }
@@ -87,11 +43,18 @@ class Scene_Event {
     this.orbit.rotateSpeed = -0.5;
 
     this.isRotating = false;
+
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 2);
+    this.directionalLight = new THREE.DirectionalLight(0xffffff, 2);
+    this.directionalLight.position.set(-20, 10, 100);
+    this.scene.add(this.directionalLight);
+    this.scene.add(this.ambientLight);
   }
 
   initHelper() {
     this.scene.add(new THREE.AxesHelper(20));
-    this.scene.add(new THREE.GridHelper(50));
+    // this.scene.add(new THREE.GridHelper(50));
+    this.scene.add(new THREE.DirectionalLightHelper(this.directionalLight));
   }
 
   requestAnimation() {
@@ -112,6 +75,111 @@ class Scene_Event {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
   }
+
+  imagesPreLoad() {
+    const textureLoader = new THREE.TextureLoader();
+    this.shpearMapSrc = {
+      'basic': [
+        textureLoader.load('./images/Sphere/exterior/sphere_img_01.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_02.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_03.jpg'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_04.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_05.jpg'),
+      ],
+      'normal': [
+        textureLoader.load('./images/Sphere/exterior/sphere_img_01_normal.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_02_normal.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_03_normal.jpg'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_04.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_05_normal.jpg'),
+      ],
+      'roughness': [
+        textureLoader.load('./images/Sphere/exterior/sphere_img_01_roughness.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_02_roughness.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_03_roughness.jpg'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_04.png'),
+        textureLoader.load('./images/Sphere/exterior/sphere_img_05_roughness.jpg'),
+      ],
+      'backSideMap': [
+        textureLoader.load('./images/Sphere/interior/sphere_img_01.jpg'),
+        textureLoader.load('./images/Sphere/interior/sphere_img_02.jpg'),
+        textureLoader.load('./images/Sphere/interior/sphere_img_03.jpg'),
+        textureLoader.load('./images/Sphere/interior/sphere_img_04.jpg'),
+        textureLoader.load('./images/Sphere/interior/sphere_img_05.jpg'),
+      ]
+    }
+
+    this.squareMapSrc = {
+      'basic': [
+        textureLoader.load('./images/Square/exterior/square_img_01.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_02.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_03.png'),
+        textureLoader.load('./images/Square/exterior/square_img_04.png'),
+        textureLoader.load('./images/Square/exterior/square_img_05.png'),
+      ],
+
+      'normal': [
+        textureLoader.load('./images/Square/exterior/square_img_01_normal.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_02_normal.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_03_normal.png'),
+        textureLoader.load('./images/Square/exterior/square_img_04_normal.png'),
+        textureLoader.load('./images/Square/exterior/square_img_05_normal.png'),
+      ],
+      'roughness': [
+        textureLoader.load('./images/Square/exterior/square_img_01_roughness.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_02_roughness.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_03_roughness.png'),
+        textureLoader.load('./images/Square/exterior/square_img_04_roughness.png'),
+        textureLoader.load('./images/Square/exterior/square_img_05_roughness.png'),
+      ],
+      'backSideMap': [
+        textureLoader.load('./images/Square/interior/square_img_01.jpg'),
+        textureLoader.load('./images/Square/interior/square_img_02.jpg'),
+        textureLoader.load('./images/Square/interior/square_img_03.jpg'),
+        textureLoader.load('./images/Square/interior/square_img_04.jpg'),
+        textureLoader.load('./images/Square/interior/square_img_05.jpg'),
+      ],
+      'dice': [
+        textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
+        textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
+        textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
+        textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
+        textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
+        textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+      ],
+    }
+
+    this.diceMaterial = [
+      new THREE.MeshStandardMaterial({side: THREE.BackSide, transparent:true, map: textureLoader.load('./images/Square/exterior/dice/dice-1.png') }),
+      new THREE.MeshStandardMaterial({side: THREE.BackSide, transparent:true, map: textureLoader.load('./images/Square/exterior/dice/dice-2.png') }),
+      new THREE.MeshStandardMaterial({side: THREE.BackSide, transparent:true, map: textureLoader.load('./images/Square/exterior/dice/dice-3.png') }),
+      new THREE.MeshStandardMaterial({side: THREE.BackSide, transparent:true, map: textureLoader.load('./images/Square/exterior/dice/dice-4.png') }),
+      new THREE.MeshStandardMaterial({side: THREE.BackSide, transparent:true, map: textureLoader.load('./images/Square/exterior/dice/dice-5.png') }),
+      new THREE.MeshStandardMaterial({side: THREE.BackSide, transparent:true, map: textureLoader.load('./images/Square/exterior/dice/dice-6.png') }),
+    ];
+
+    this.shpearMesh.children[0].material.map = this.shpearMapSrc.basic[0];
+    this.shpearMesh.children[0].material.normalMap = this.shpearMapSrc.normal[0];
+    this.shpearMesh.children[0].material.roughnessMap = this.shpearMapSrc.roughness[0];
+    this.shpearMesh.children[1].material.map = this.shpearMapSrc.backSideMap[0];
+
+
+    this.squareMesh.children[0].material.map = this.squareMapSrc.basic[0];
+    this.squareMesh.children[0].material.normalMap = this.squareMapSrc.normal[0];
+    this.squareMesh.children[0].material.roughnessMap = this.squareMapSrc.roughness[0];
+    this.squareMesh.children[1].material.map = this.squareMapSrc.backSideMap[0];
+
+    // this.squareMesh.children[0]에 diceMaterial 적용
+    // this.squareMesh.children[0].material = this.diceMaterial;
+    // console.log(this.squareMesh.children[0].material);
+
+    for (let i = 0; i < this.shpearMapSrc.basic.length; i++) {
+      this.shpearMapSrc.basic[i].colorSpace = THREE.SRGBColorSpace;
+      this.shpearMapSrc.backSideMap[i].colorSpace = THREE.SRGBColorSpace;
+      this.squareMapSrc.basic[i].colorSpace = THREE.SRGBColorSpace;
+      this.squareMapSrc.backSideMap[i].colorSpace = THREE.SRGBColorSpace;
+    }
+  }
 }
 
 
@@ -129,7 +197,7 @@ class Mouse_Event {
     this.buttons = this.container.querySelectorAll('button');
 
     this.imgLength = imgLength;
-    this.shprearNum = 1;
+    this.shpearNum = 1;
     this.squareNum = 1;
 
     this.hoverCheck = false;
@@ -177,6 +245,7 @@ class Mouse_Event {
         this.hoverCheck = false;
         console.log(this.button, '# 마우스 CLICK!');
 
+
         // 시작 버튼들
         if (this.button.target.parentNode.id === 'start_wrap') {
           this.startWrap.classList.add('displayN');
@@ -188,30 +257,41 @@ class Mouse_Event {
           this.timeLine_C.eventCallback('onUpdate', () => { this.container.style.pointerEvents = 'none'; })
           this.timeLine_C.eventCallback('onComplete', () => {
             scene_E.isRotating = true;
+            scene_E.ambientLight.intensity = 3;
             this.container.style.pointerEvents = 'auto';
           })
         }
 
         if (this.button.target.className === 'prev on') {
-          console.log(this.button.target.parentNode.id);
-
           switch (this.button.target.parentNode.id) {
-            case 'shpear': this.shprearNum--; break;
+            case 'shpear': this.shpearNum--; break;
             case 'square': this.squareNum--; break;
           }
-          if (this.shprearNum === 0) this.shprearNum = this.imgLength;
+          if (this.shpearNum === 0) this.shpearNum = this.imgLength;
           if (this.squareNum === 0) this.squareNum = this.imgLength;
+          if (this.shpearNum === 4 || this.shpearNum === 4) scene_E.ambientLight.intensity = 5;
+          else scene_E.ambientLight.intensity = 2;
         }
+
         if (this.button.target.className === 'next on') {
           switch (this.button.target.parentNode.id) {
-            case 'shpear': this.shprearNum++; break;
+            case 'shpear': this.shpearNum++; break;
             case 'square': this.squareNum++; break;
           }
-          if (this.shprearNum === this.imgLength + 1) this.shprearNum = 1;
+          if (this.shpearNum === this.imgLength + 1) this.shpearNum = 1;
           if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
+          if (this.shpearNum === 4 || this.shpearNum === 4) scene_E.ambientLight.intensity = 5;
+          else scene_E.ambientLight.intensity = 2;
         }
-        scene_E.shpearMesh.frontTexture = scene_E.frontTexture_circle[this.shprearNum - 1];
-        scene_E.squareMesh.frontTexture = scene_E.frontTexture_box[this.squareNum - 1];
+
+        scene_E.shpearMesh.children[0].material.map = scene_E.shpearMapSrc.basic[this.shpearNum - 1];
+        scene_E.shpearMesh.children[0].material.normalMap = scene_E.shpearMapSrc.normal[this.shpearNum - 1];
+        scene_E.shpearMesh.children[0].material.roughnessMap = scene_E.shpearMapSrc.roughness[this.shpearNum - 1];
+
+        scene_E.squareMesh.children[0].material.map = scene_E.squareMapSrc.basic[this.squareNum - 1];
+        scene_E.squareMesh.children[0].material.normalMap = scene_E.squareMapSrc.normal[this.squareNum - 1];
+        scene_E.squareMesh.children[0].material.roughnessMap = scene_E.squareMapSrc.roughness[this.squareNum - 1];
+
 
 
 
@@ -219,10 +299,10 @@ class Mouse_Event {
         if (this.button.target.id === 'prev') {
           console.log('# Prev button!');
           switch (this.objectWrap.classList.value) {
-            case 'shpear': this.shprearNum--; break;
+            case 'shpear': this.shpearNum--; break;
             case 'square': this.squareNum--; break;
           }
-          if (this.shprearNum === 0) this.shprearNum = this.imgLength;
+          if (this.shpearNum === 0) this.shpearNum = this.imgLength;
           if (this.squareNum === 0) this.squareNum = this.imgLength;
         }
 
@@ -230,38 +310,34 @@ class Mouse_Event {
         if (this.button.target.id === 'next') {
           console.log('# Next button!');
           switch (this.objectWrap.classList.value) {
-            case 'shpear': this.shprearNum++; break;
+            case 'shpear': this.shpearNum++; break;
             case 'square': this.squareNum++; break;
           }
-          if (this.shprearNum === this.imgLength + 1) this.shprearNum = 1;
+          if (this.shpearNum === this.imgLength + 1) this.shpearNum = 1;
           if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
         }
 
-        scene_E.shpearMesh.backTexture = scene_E.backTexture_circle[this.shprearNum - 1];
-        scene_E.squareMesh.backTexture = scene_E.backTexture_box[this.squareNum - 1];
+        scene_E.shpearMesh.backTexture = scene_E.shpearMapSrc.backSideMap[this.shpearNum - 1];
+        scene_E.squareMesh.backTexture = scene_E.squareMapSrc.backSideMap[this.squareNum - 1];
 
-        let curCircleMesh = scene_E.shpearMesh.children;
-        let curBoxMesh = scene_E.squareMesh.children;
-        for (let i = 0; i < curCircleMesh.length; i++) {
-          if (curCircleMesh[i].name === 'backCircleMesh') curCircleMesh[1].material.map = scene_E.shpearMesh.backTexture;
-          else curCircleMesh[0].material.map = scene_E.shpearMesh.frontTexture;
-
-          if (curBoxMesh[i].name === 'backBoxMesh') curBoxMesh[1].material.map = scene_E.squareMesh.backTexture;
-          else curBoxMesh[0].material.map = scene_E.squareMesh.frontTexture;
-        }
+        // let curCircleMesh = scene_E.shpearMesh.children;
+        // let curBoxMesh = scene_E.squareMesh.children;
+        scene_E.shpearMesh.children[1].material.map = scene_E.shpearMesh.backTexture;
+        scene_E.squareMesh.children[1].material = scene_E.diceMaterial;
 
         // 돌아 가기
         if (this.button.target.id === 'return') {
           console.log('# Return button!');
           scene_E.isRotating = false;
           this.objectWrap.className = '';
-          this.shprearNum, this.squareNum = 1;
+          this.shpearNum, this.squareNum = 1;
           this.startWrap.classList.remove('displayN');
 
           if (this.objectWrap.classList.value === 'shpear') this.shpearClickAct().reverse();
           else this.squareClickAct().reverse();
 
           this.timeLine_C.eventCallback('onReverseComplete', () => {
+            scene_E.ambientLight.intensity = 2;
             this.container.style.pointerEvents = 'auto';
             this.timeLine_C.clear();
           })
@@ -272,22 +348,22 @@ class Mouse_Event {
 
   shpearHoverAct() {
     this.timeLine_H
-      .to(this.shpearBtn, { duration: 0.3, scale: 1.4, x: 180, width: 700, color: "transparent" })
+      .to(this.shpearBtn, { duration: 0.3, scale: 1.4, x: 180, width: 400, })
       .to(this.squareBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
       .to(scene_E.shpearMesh.position, { duration: 0.5, x: 0, y: 15, z: 50, ease: "power4.inOut", }, '<')
   }
 
   squareHoverAct() {
     this.timeLine_H
-      .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180, width: 700, color: "transparent" })
+      .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180, width: 400, })
       .to(this.shpearBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
       .to(scene_E.squareMesh.position, { duration: 0.5, x: 0, y: 15, z: 48, ease: "power4.inOut", }, '<')
   }
 
   objectLeaveAct() {
     this.timeLine_L
-      .to(this.shpearBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300, color: "#000" })
-      .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300, color: "#000" }, '<')
+      .to(this.shpearBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300 })
+      .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300 }, '<')
       .to(scene_E.shpearMesh.position, { x: -20, y: 0, z: 0, ease: "power4.inOut", }, '<')
       .to(scene_E.squareMesh.position, { x: 20, y: 0, z: 0, ease: "power4.inOut", }, '<')
     // this.timeLine_L.eventCallback('onComplete', () => {
@@ -315,7 +391,7 @@ class Mouse_Event {
 
 
 const scene_E = new Scene_Event();
-const mouse_E = new Mouse_Event('#wrap', scene_E.frontTexture_circle.length);
+const mouse_E = new Mouse_Event('#wrap', scene_E.shpearMapSrc.basic.length);
 console.log('# Scene_Event', scene_E);
 console.log('# Mouse_Event', mouse_E);
 
