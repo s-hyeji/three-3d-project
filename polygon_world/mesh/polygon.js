@@ -3,7 +3,7 @@ import * as THREE from 'three';
 export default class Polygon {
   constructor(shape) {
     this.shape = shape;
-    this.color = '#A6A6A6';
+    this.color = '#FF7694';
     this.mesh = null;
     // 
     this.shapeSetting();
@@ -32,8 +32,6 @@ export default class Polygon {
     }
     const material = new THREE.MeshStandardMaterial({
       color: this.color,
-      // roughness: 0.3,
-      // metalness: 0.1,
       side: THREE.DoubleSide
     });
     this.mesh = new THREE.Mesh(geometry, material);
@@ -48,14 +46,9 @@ export default class Polygon {
     this.color = newColor;
     if (this.mesh) {
       this.mesh.material.color.set(new THREE.Color(newColor));
-      console.log(this.mesh.material);
+      // console.log(this.mesh.material);
     }
-    console.log(this.mesh.material);
   }
   show(scene) {
-    if (this.mesh) {
-      scene.add(this.mesh);
-      meshAni(this.mesh);
-    }
   }
 }

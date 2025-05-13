@@ -201,7 +201,7 @@
   border: 3px solid #ccc;
   border-radius: 10px;
   margin-right: 12px;
-  background-color: #A6A6A6;
+  background-color: #FF7694;
   cursor: pointer;
  }
 
@@ -271,5 +271,7 @@
  /* right: 100px; */
  width: 700px;
  height: 510px;
- outline: 1px solid;
+ border-radius: 10px;
+ /* box-shadow: 0 0 10px #FF7694; */
+ /* outline: 1px solid; */
 }
