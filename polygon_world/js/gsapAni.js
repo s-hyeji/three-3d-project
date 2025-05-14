@@ -6,7 +6,6 @@ export function gsapAni({ selectedBtn, selectBtns, resetBtn, controller, selecte
  const otherBtns = [...selectBtns].filter(btn => btn !== selectedBtn);
 
  const tl = gsap.timeline();
- let subTl = null;
 
  tl.to(".selectText", {
   x: -1200,

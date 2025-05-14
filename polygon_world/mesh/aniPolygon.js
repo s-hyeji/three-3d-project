@@ -13,11 +13,11 @@ export function aniPolygon(type, resetBtn, controller) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
   renderer.setSize(clientWidth, clientHeight);
-  aniBox.innerHTML = ""; // 기존 캔버스 제거
+  aniBox.innerHTML = "";
   aniBox.appendChild(renderer.domElement);
 
-  camera.position.set(0, 0, 5); // 정면
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
+  camera.position.set(0, 0, 5);
+  camera.lookAt(0, 0, 0);
   camera.aspect = clientWidth / clientHeight;
   camera.updateProjectionMatrix();
 
@@ -28,7 +28,7 @@ export function aniPolygon(type, resetBtn, controller) {
   const ambient = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambient);
 
-  const polygon = new Polygon(type);
+  const polygon = new Polygon(type, 'standard');
   const mesh = polygon.getMesh();
   mesh.position.set(0, 6, 0);
   mesh.visible = true;
@@ -36,7 +36,7 @@ export function aniPolygon(type, resetBtn, controller) {
 
   gsap.to(mesh.position, {
     y: 0,
-    duration: 0.6,
+    duration: 0.8,
     ease: 'back.out(1.7)',
     onComplete: () => {
       scene.remove(mesh);
@@ -61,9 +61,9 @@ export function aniPolygon(type, resetBtn, controller) {
         ease: 'power2.in'
       });
       gsap.to(leftMesh.scale, {
-        x: 0.08,
-        y: 0.08,
-        z: 0.08,
+        x: 0.05,
+        y: 0.05,
+        z: 0.05,
         duration: 0.8,
         ease: 'power2.in'
       });
@@ -81,9 +81,9 @@ export function aniPolygon(type, resetBtn, controller) {
         ease: 'power2.in'
       });
       gsap.to(rightMesh.scale, {
-        x: 0.08,
-        y: 0.08,
-        z: 0.08,
+        x: 0.05,
+        y: 0.05,
+        z: 0.05,
         duration: 0.8,
         ease: 'power2.in',
 
@@ -107,7 +107,7 @@ export function aniPolygon(type, resetBtn, controller) {
             .to(resetBtn, {
               left: 32,
               duration: 0.5
-            }, 2)
+            }, 1.5)
             .to(controller, {
               left: 30,
               duration: 0.5
