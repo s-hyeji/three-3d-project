@@ -12,12 +12,17 @@ button {
 }
 
 #wrap {
-  position: relative;
   padding: 20px;
   user-select: none;
-  z-index: 1;
-  
+  box-sizing: border-box;
 }
+
+canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
 
 #start_wrap {
   display: flex;
@@ -34,16 +39,16 @@ button {
   width: 300px;
   font-size: 30px;
   padding: 20px 20px 22px 20px;
-  border: 5px solid #4c9dff;
+  border: 5px solid #fff;
   border-radius: 50px;
-  background-color: #fff;
-  color: #4c9dff;
+  background-color: transparent;
+  color: #fff;
 }
 
 #start_wrap > button:hover {
   width: 500px;
   border-color: #fff;
-  background-color: #ff2172;
+  background-color: transparent;
   color: #fff;
 }
 
@@ -60,6 +65,7 @@ button {
   border: 2px solid #fff;
   border-radius: 50%;
   font-size: 30px;
+  transition: all 0.1s;
   
 }
 #start_wrap > button.on > span {display: flex;}
@@ -68,9 +74,9 @@ button {
   right: 6px;
 }
 #start_wrap > button > span:hover{
-  font-size: 40px;
+  font-size: 35px;
   color: #fff;
-  background-color: #ff2172;
+  background-color: #ffd500;
 }
 
 

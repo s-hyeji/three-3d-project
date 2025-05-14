@@ -8,7 +8,11 @@ import showSquareMesh from './Mesh/squareMesh.js';
 class Scene_Event {
   constructor() {
     // 메쉬 선언
+    this.container = document.querySelector('#wrap')
+    this.width = 1280;
+    this.height = 720;
     this.scene = new THREE.Scene();
+
     this.universeMesh = showUniverse();
     this.shpearMesh = showShpearMesh();
     this.squareMesh = showSquareMesh();
@@ -28,14 +32,14 @@ class Scene_Event {
     this.scene.add(this.squareMesh);
 
     // camera
-    this.camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+    this.camera = new THREE.PerspectiveCamera(70, this.width / this.height, 0.1, 1000);
     this.camera.position.set(0, 20, 70);
     this.camera.lookAt(0, 0, 0);
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({ alpha: 0xffffff });
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(this.renderer.domElement);
+    this.renderer.setSize(this.width, this.height);
+    this.container.prepend(this.renderer.domElement);
 
     // OrbitControls
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -70,9 +74,9 @@ class Scene_Event {
 
   windowResize() {
     window.addEventListener('resize', () => {
-      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.camera.aspect = this.width / this.height;
       this.camera.updateProjectionMatrix();
-      this.renderer.setSize(window.innerWidth, window.innerHeight);
+      this.renderer.setSize(this.width, this.height);
     });
   }
 
@@ -133,19 +137,51 @@ class Scene_Event {
         textureLoader.load('./images/Square/exterior/square_img_05_roughness.png'),
       ],
       'backSideMap': [
-        textureLoader.load('./images/Square/interior/square_img_01.jpg'),
-        textureLoader.load('./images/Square/interior/square_img_02.jpg'),
-        textureLoader.load('./images/Square/interior/square_img_03.jpg'),
-        textureLoader.load('./images/Square/interior/square_img_04.jpg'),
-        textureLoader.load('./images/Square/interior/square_img_05.jpg'),
-      ],
-      'dice': [
-        textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
-        textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
-        textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
-        textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
-        textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
-        textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+        [
+          textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
+          textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
+          textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
+          textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
+          textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
+          textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+        ],
+        // [
+        //   textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+        // ],
+        // [
+        //   textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+        // ],
+        // [
+        //   textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+        // ],
+        // [
+        //   textureLoader.load('./images/Square/exterior/dice/dice-1.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-2.jpg'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-3.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-4.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-5.png'),
+        //   textureLoader.load('./images/Square/exterior/dice/dice-6.png'),
+        // ],
+        [textureLoader.load('./images/Square/interior/square_img_01.jpg')],
+        [textureLoader.load('./images/Square/interior/square_img_02.jpg')],
+        [textureLoader.load('./images/Square/interior/square_img_03.jpg')],
+        [textureLoader.load('./images/Square/interior/square_img_04.jpg')],
+        [textureLoader.load('./images/Square/interior/square_img_05.jpg')],
       ],
     }
 
@@ -163,11 +199,12 @@ class Scene_Event {
     this.shpearMesh.children[0].material.roughnessMap = this.shpearMapSrc.roughness[0];
     this.shpearMesh.children[1].material.map = this.shpearMapSrc.backSideMap[0];
 
-
+    console.log(this.squareMapSrc.backSideMap);
+    
     this.squareMesh.children[0].material.map = this.squareMapSrc.basic[0];
     this.squareMesh.children[0].material.normalMap = this.squareMapSrc.normal[0];
     this.squareMesh.children[0].material.roughnessMap = this.squareMapSrc.roughness[0];
-    this.squareMesh.children[1].material.map = this.squareMapSrc.backSideMap[0];
+    this.squareMesh.children[1].material.map = this.squareMapSrc.backSideMap[0][0];
 
     // this.squareMesh.children[0]에 diceMaterial 적용
     // this.squareMesh.children[0].material = this.diceMaterial;
@@ -211,12 +248,7 @@ class Mouse_Event {
     this.clickEvent();
     this.startWrap_btns.forEach((buttons) => { buttons.addEventListener('mouseover', (event) => { this.hoverEvent(event); }); })
     this.startWrap.addEventListener('mouseleave', (event) => { this.LeaveEvent(event); });
-    document.addEventListener('dblclick', () => { this.downEvent(); });
-    document.addEventListener('contextmenu', () => { this.contextmenuEvent(); });
   }
-
-  downEvent() { this.container.style.pointerEvents = 'none'; }
-  contextmenuEvent() { this.container.style.pointerEvents = 'auto'; }
 
   hoverEvent(event) {
     this.hoverCheck = true;
