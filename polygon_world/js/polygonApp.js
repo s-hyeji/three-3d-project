@@ -14,12 +14,12 @@ export default class PolygonApp {
   this.contentArea = document.querySelector('.contentArea');
   this.orbitToggle = document.querySelector('.controll_toggle.camera input');
   this.transparentToggle = document.querySelector('.controll_toggle.trans input');
+  this.lightToggle = document.querySelector('.controll_toggle.light input');
 
   this.selectedBtn = null;
   this.selectedType = null;
   this.selectedColor = null;
   this.timeline = null;
-  this.subTimeline = null;
   this.polygonColor = null;
   this.polygonControl = null;
 
@@ -37,13 +37,14 @@ export default class PolygonApp {
     this.start();
    });
   });
-
+  // 컬러 팝업
   this.colorBtn.addEventListener("click", () => {
    this.colorPopup.classList.toggle("on");
   });
-
+  // 리셋
   this.resetBtn.addEventListener("click", () => this.reset());
-
+  // 
+  // 컨트롤러
   if (this.orbitToggle) {
    this.orbitToggle.addEventListener('change', () => {
     const useControls = this.orbitToggle.checked;
@@ -52,12 +53,29 @@ export default class PolygonApp {
     }
    });
   }
-
+  // 투시
   if (this.transparentToggle) {
    this.transparentToggle.addEventListener('change', () => {
     const transparent = this.transparentToggle.checked;
     if (this.polygonControl && this.polygonControl.applyTransparency) {
      this.polygonControl.applyTransparency(transparent);
+    }
+
+    if (transparent) {
+     this.lightToggle.parentElement.classList.add("off")
+     this.colorBtn.parentElement.classList.add("off")
+    } else {
+     this.lightToggle.parentElement.classList.remove("off")
+     this.colorBtn.parentElement.classList.remove("off")
+    }
+   });
+  }
+  // 빛
+  if (this.lightToggle) {
+   this.lightToggle.addEventListener('change', () => {
+    const enableLight = this.lightToggle.checked;
+    if (this.polygonControl && this.polygonControl.toggleLight) {
+     this.polygonControl.toggleLight(enableLight);
     }
    });
   }
@@ -109,12 +127,18 @@ export default class PolygonApp {
    selectedType: this.selectedType
   });
 
-  const { polygon, setControlsEnabled, applyTransparency } = playPolygon(this.selectedType, isTransparent);
+  // 토글 
+  const { polygon, setControlsEnabled, applyTransparency, toggleLight } = playPolygon(this.selectedType, isTransparent);
   this.polygonColor = polygon;
-  this.polygonControl = { setControlsEnabled, applyTransparency };
-
+  this.polygonControl = { setControlsEnabled, applyTransparency, toggleLight };
   if (this.orbitToggle) this.orbitToggle.checked = true;
   if (this.transparentToggle) this.transparentToggle.checked = false;
+  if (this.lightToggle) {
+   this.lightToggle.checked = false;
+   if (this.polygonControl && this.polygonControl.toggleLight) {
+    this.polygonControl.toggleLight(false);
+   }
+  }
   this.polygonControl.setControlsEnabled(useControls);
   this.polygonControl.applyTransparency(isTransparent);
  }

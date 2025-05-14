@@ -13,7 +13,7 @@ export function aniPolygon(type, resetBtn, controller) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 
   renderer.setSize(clientWidth, clientHeight);
-  aniBox.innerHTML = ""; // 기존 캔버스 제거
+  aniBox.innerHTML = "";
   aniBox.appendChild(renderer.domElement);
 
   camera.position.set(0, 0, 5); // 정면
@@ -28,7 +28,7 @@ export function aniPolygon(type, resetBtn, controller) {
   const ambient = new THREE.AmbientLight(0xffffff, 0.5);
   scene.add(ambient);
 
-  const polygon = new Polygon(type);
+  const polygon = new Polygon(type, 'standard');
   const mesh = polygon.getMesh();
   mesh.position.set(0, 6, 0);
   mesh.visible = true;
@@ -107,7 +107,7 @@ export function aniPolygon(type, resetBtn, controller) {
             .to(resetBtn, {
               left: 32,
               duration: 0.5
-            }, 2)
+            }, 1.5)
             .to(controller, {
               left: 30,
               duration: 0.5

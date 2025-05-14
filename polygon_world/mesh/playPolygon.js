@@ -3,7 +3,7 @@ import { OrbitControls } from "OrbitControls";
 import Polygon from './polygon.js';
 import gsap from 'gsap';
 
-export function playPolygon(type, isTransparent = false) {
+export function playPolygon(type, isTransparent) {
  const polygonBox = document.querySelector('.polygonBox');
  const { clientWidth, clientHeight } = polygonBox;
 
@@ -15,11 +15,11 @@ export function playPolygon(type, isTransparent = false) {
  polygonBox.innerHTML = "";
  polygonBox.appendChild(renderer.domElement);
 
- const initialCameraPosition = new THREE.Vector3(2, 2, 5);
- const initialMeshPositionY = 0;
- const initialMeshRotationY = 0;
+ const cameraPosition = new THREE.Vector3(1, 3, 5);
+ const meshPositionY = 0;
+ const meshRotationY = 0;
 
- camera.position.copy(initialCameraPosition);
+ camera.position.copy(cameraPosition);
  camera.lookAt(0, 0, 0);
 
  const light = new THREE.DirectionalLight(0xffffff, 4);
@@ -27,13 +27,28 @@ export function playPolygon(type, isTransparent = false) {
  scene.add(light);
 
  const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+ ambient.position.set(2, 4, 3);
+
  scene.add(ambient);
 
- const polygon = new Polygon(type);
+ const backLight = new THREE.DirectionalLight(0xffffff, 2);
+ backLight.position.set(-2, -3, -4);
+ scene.add(backLight);
+
+ // 재질 제어
+ function toggleLight(enabled) {
+  light.visible = enabled;
+  ambient.visible = enabled;
+
+  polygon.setMaterial(enabled ? 'standard' : 'basic');
+ }
+
+ // 매시 생성 
+ const polygon = new Polygon(type, 'basic');
  const mesh = polygon.getMesh();
  mesh.visible = true;
- mesh.position.y = initialMeshPositionY;
- mesh.rotation.y = initialMeshRotationY;
+ mesh.position.y = meshPositionY;
+ mesh.rotation.y = meshRotationY;
  scene.add(mesh);
 
  let edgeLines = null;
@@ -46,9 +61,10 @@ export function playPolygon(type, isTransparent = false) {
  let pauseStartTime = 0;
  let timeOffset = 0;
  let animationEnabled = true;
- let rotationY = initialMeshRotationY;
+ let rotationY = meshRotationY;
  let returnToRotationTween = null;
 
+ // 투시 재질
  function applyTransparency(enabled) {
   if (enabled) {
    mesh.material.transparent = true;
@@ -92,9 +108,9 @@ export function playPolygon(type, isTransparent = false) {
 
   if (!enabled) {
    gsap.to(camera.position, {
-    x: initialCameraPosition.x,
-    y: initialCameraPosition.y,
-    z: initialCameraPosition.z,
+    x: cameraPosition.x,
+    y: cameraPosition.y,
+    z: cameraPosition.z,
     duration: 0.8,
     ease: 'power2.out',
     onUpdate: () => {
@@ -103,12 +119,12 @@ export function playPolygon(type, isTransparent = false) {
    });
 
    gsap.to(mesh.position, {
-    y: initialMeshPositionY,
+    y: meshPositionY,
     duration: 0.8,
     ease: 'power2.out'
    });
 
-   const shortestAngle = ((initialMeshRotationY - rotationY + Math.PI) % (2 * Math.PI)) - Math.PI;
+   const shortestAngle = ((meshRotationY - rotationY + Math.PI) % (2 * Math.PI)) - Math.PI;
    const targetRotationY = rotationY + shortestAngle;
 
    if (returnToRotationTween) returnToRotationTween.kill();
@@ -133,8 +149,8 @@ export function playPolygon(type, isTransparent = false) {
   const elapsed = clock.getElapsedTime() - timeOffset;
 
   if (!isUserInteracting && animationEnabled) {
-   mesh.position.y = 0.2 * Math.sin(elapsed * 2);
-   rotationY += 0.005;
+   mesh.position.y = 0.1 * Math.sin(elapsed * 2);
+   rotationY += 0.003;
    mesh.rotation.y = rotationY;
   }
 
@@ -147,6 +163,7 @@ export function playPolygon(type, isTransparent = false) {
  return {
   polygon,
   setControlsEnabled,
-  applyTransparency
+  applyTransparency,
+  toggleLight
  };
 }
