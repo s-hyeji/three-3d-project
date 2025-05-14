@@ -16,8 +16,8 @@ export function aniPolygon(type, resetBtn, controller) {
   aniBox.innerHTML = "";
   aniBox.appendChild(renderer.domElement);
 
-  camera.position.set(0, 0, 5); // 정면
-  camera.lookAt(new THREE.Vector3(0, 0, 0));
+  camera.position.set(0, 0, 5);
+  camera.lookAt(0, 0, 0);
   camera.aspect = clientWidth / clientHeight;
   camera.updateProjectionMatrix();
 
@@ -36,7 +36,7 @@ export function aniPolygon(type, resetBtn, controller) {
 
   gsap.to(mesh.position, {
     y: 0,
-    duration: 0.6,
+    duration: 0.8,
     ease: 'back.out(1.7)',
     onComplete: () => {
       scene.remove(mesh);
@@ -61,9 +61,9 @@ export function aniPolygon(type, resetBtn, controller) {
         ease: 'power2.in'
       });
       gsap.to(leftMesh.scale, {
-        x: 0.08,
-        y: 0.08,
-        z: 0.08,
+        x: 0.05,
+        y: 0.05,
+        z: 0.05,
         duration: 0.8,
         ease: 'power2.in'
       });
@@ -81,9 +81,9 @@ export function aniPolygon(type, resetBtn, controller) {
         ease: 'power2.in'
       });
       gsap.to(rightMesh.scale, {
-        x: 0.08,
-        y: 0.08,
-        z: 0.08,
+        x: 0.05,
+        y: 0.05,
+        z: 0.05,
         duration: 0.8,
         ease: 'power2.in',
 

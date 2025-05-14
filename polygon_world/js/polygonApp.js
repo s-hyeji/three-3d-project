@@ -156,6 +156,9 @@ export default class PolygonApp {
    this.contentArea.setAttribute("data-type", "");
    this.colorBtn.style.backgroundColor = "#FF7694";
    this.colorPopup.classList.remove("on");
+
+   this.lightToggle.parentElement.classList.remove("off")
+   this.colorBtn.parentElement.classList.remove("off")
   }, 500);
  }
 }

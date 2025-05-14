@@ -11,7 +11,7 @@ export default class Polygon {
   }
 
   shapeSetting() {
-    console.log('도형 타입:', this.shape);
+    // console.log('도형 타입:', this.shape);
     let geometry;
 
     switch (this.shape) {
@@ -20,10 +20,8 @@ export default class Polygon {
         break;
 
       case 'triangle': {
-        geometry = new THREE.TetrahedronGeometry(2);
-        geometry.rotateY(Math.PI / 4);
-        geometry.rotateX(Math.PI / 5);
-        geometry.rotateZ(Math.PI);
+        geometry = new THREE.ConeGeometry(1.8, 3.2, 3);
+        geometry.rotateY(Math.PI / 6);
         break;
       }
 

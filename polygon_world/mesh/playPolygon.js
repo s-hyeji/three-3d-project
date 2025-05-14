@@ -10,15 +10,18 @@ export function playPolygon(type, isTransparent) {
  const scene = new THREE.Scene();
  const camera = new THREE.PerspectiveCamera(75, clientWidth / clientHeight, 0.1, 1000);
  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+ // {
+ //  const axes = new THREE.AxesHelper(50);
+ //  scene.add(axes);
+ // }
 
  renderer.setSize(clientWidth, clientHeight);
  polygonBox.innerHTML = "";
  polygonBox.appendChild(renderer.domElement);
 
- const cameraPosition = new THREE.Vector3(1, 3, 5);
- const meshPositionY = 0;
- const meshRotationY = 0;
-
+ console.log('도형 타입:' + type);
+ let cameraPosition
+ cameraPosition = new THREE.Vector3(0, 0, 4);
  camera.position.copy(cameraPosition);
  camera.lookAt(0, 0, 0);
 
@@ -26,14 +29,17 @@ export function playPolygon(type, isTransparent) {
  light.position.set(2, 4, 3);
  scene.add(light);
 
- const ambient = new THREE.AmbientLight(0xffffff, 0.5);
+ const ambient = new THREE.AmbientLight(0xffffff, 1);
  ambient.position.set(2, 4, 3);
-
  scene.add(ambient);
 
  const backLight = new THREE.DirectionalLight(0xffffff, 2);
  backLight.position.set(-2, -3, -4);
  scene.add(backLight);
+
+ // const helper = new THREE.DirectionalLightHelper(light);
+ // const helper2 = new THREE.DirectionalLightHelper(backLight);
+ // scene.add(helper, helper2);
 
  // 재질 제어
  function toggleLight(enabled) {
@@ -46,8 +52,11 @@ export function playPolygon(type, isTransparent) {
  // 매시 생성 
  const polygon = new Polygon(type, 'basic');
  const mesh = polygon.getMesh();
+ const meshPositionY = 0;
+ const meshRotationY = 0;
+ const baseMeshY = (type === "triangle") ? meshPositionY + 0.3 : meshPositionY;
  mesh.visible = true;
- mesh.position.y = meshPositionY;
+ mesh.position.y = baseMeshY;
  mesh.rotation.y = meshRotationY;
  scene.add(mesh);
 
@@ -107,6 +116,7 @@ export function playPolygon(type, isTransparent) {
   animationEnabled = enabled;
 
   if (!enabled) {
+   console.log(cameraPosition.x, cameraPosition.y, cameraPosition.z);
    gsap.to(camera.position, {
     x: cameraPosition.x,
     y: cameraPosition.y,
@@ -118,11 +128,11 @@ export function playPolygon(type, isTransparent) {
     }
    });
 
-   gsap.to(mesh.position, {
-    y: meshPositionY,
-    duration: 0.8,
-    ease: 'power2.out'
-   });
+   // gsap.to(mesh.position, {
+   //  y: meshPositionY,
+   //  duration: 0.8,
+   //  ease: 'power2.out'
+   // });
 
    const shortestAngle = ((meshRotationY - rotationY + Math.PI) % (2 * Math.PI)) - Math.PI;
    const targetRotationY = rotationY + shortestAngle;
@@ -134,6 +144,10 @@ export function playPolygon(type, isTransparent) {
     ease: 'power2.out',
     onUpdate: () => {
      rotationY = mesh.rotation.y;
+
+     if (edgeLines) {
+      edgeLines.rotation.y = rotationY;
+     }
     }
    });
 
@@ -149,10 +163,17 @@ export function playPolygon(type, isTransparent) {
   const elapsed = clock.getElapsedTime() - timeOffset;
 
   if (!isUserInteracting && animationEnabled) {
-   mesh.position.y = 0.1 * Math.sin(elapsed * 2);
-   rotationY += 0.003;
-   mesh.rotation.y = rotationY;
+   const floatY = baseMeshY + 0.05 * Math.sin(elapsed * 2);
+
+   mesh.position.y = floatY;
+   mesh.rotation.y = rotationY += 0.003;
+
+   if (edgeLines) {
+    edgeLines.position.y = floatY;
+    edgeLines.rotation.y = rotationY;
+   }
   }
+
 
   controls.update();
   renderer.render(scene, camera);
