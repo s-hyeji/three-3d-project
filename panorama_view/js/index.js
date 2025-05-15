@@ -18,10 +18,10 @@ class Scene_Event {
     this.squareMesh = showSquareMesh();
 
     this.init();
-    // this.initHelper();
-    this.imagesPreLoad();
+    this.imagesPreLoad(5, 6);
     this.requestAnimation();
     this.windowResize();
+    // this.initHelper();
   }
 
   init() {
@@ -48,13 +48,13 @@ class Scene_Event {
     this.orbit.enableRotate = false;
     this.orbit.enableZoom = false;
 
-    this.isRotating = false;
-
-    this.ambientLight = new THREE.AmbientLight(0xffffff, 2);
     this.directionalLight = new THREE.DirectionalLight(0xffffff, 2);
     this.directionalLight.position.set(-20, 10, 100);
+    this.ambientLight = new THREE.AmbientLight(0xffffff, 2);
     this.scene.add(this.directionalLight);
     this.scene.add(this.ambientLight);
+
+    this.isRotating = false;
   }
 
   initHelper() {
@@ -82,8 +82,11 @@ class Scene_Event {
     });
   }
 
-  imagesPreLoad() {
+  imagesPreLoad(basicLen, squareBackLen) {
+    this.basicLen = basicLen;
+    this.squareBackLen = squareBackLen;
     const textureLoader = new THREE.TextureLoader();
+    
     this.sphereMapSrc = {
       'basic': [
         textureLoader.load('./images/Sphere/exterior/sphere_img_01.png'),
@@ -115,26 +118,27 @@ class Scene_Event {
       ]
     }
 
+
     this.squareMapSrc = {
       'basic': [
         textureLoader.load('./images/Square/exterior/square_img_01.jpg'),
-        textureLoader.load('./images/Square/exterior/square_img_02.jpg'),
-        textureLoader.load('./images/Square/exterior/square_img_03.png'),
         textureLoader.load('./images/Square/exterior/square_img_04.png'),
+        textureLoader.load('./images/Square/exterior/square_img_03.png'),
+        textureLoader.load('./images/Square/exterior/square_img_02.jpg'),
         textureLoader.load('./images/Square/exterior/square_img_05.png'),
       ],
       'normal': [
         textureLoader.load('./images/Square/exterior/square_img_01_normal.jpg'),
-        textureLoader.load('./images/Square/exterior/square_img_02_normal.jpg'),
-        textureLoader.load('./images/Square/exterior/square_img_03_normal.png'),
         textureLoader.load('./images/Square/exterior/square_img_04_normal.png'),
+        textureLoader.load('./images/Square/exterior/square_img_03_normal.png'),
+        textureLoader.load('./images/Square/exterior/square_img_02_normal.jpg'),
         textureLoader.load('./images/Square/exterior/square_img_05_normal.jpg'),
       ],
       'roughness': [
         textureLoader.load('./images/Square/exterior/square_img_01_roughness.jpg'),
-        textureLoader.load('./images/Square/exterior/square_img_02_roughness.jpg'),
-        textureLoader.load('./images/Square/exterior/square_img_03_roughness.png'),
         textureLoader.load('./images/Square/exterior/square_img_04_roughness.jpg'),
+        textureLoader.load('./images/Square/exterior/square_img_03_roughness.png'),
+        textureLoader.load('./images/Square/exterior/square_img_02_roughness.jpg'),
         textureLoader.load('./images/Square/exterior/square_img_05_roughness.jpg'),
       ],
 
@@ -163,7 +167,6 @@ class Scene_Event {
           new THREE.MeshStandardMaterial({ side: THREE.BackSide, transparent: true, map: textureLoader.load('./images/Square/interior/dice_red/dice-4.png') }),
           new THREE.MeshStandardMaterial({ side: THREE.BackSide, transparent: true, map: textureLoader.load('./images/Square/interior/dice_red/dice-3.png') }),
         ],
-
         [
           new THREE.MeshStandardMaterial({ side: THREE.BackSide, transparent: true, map: textureLoader.load('./images/Square/interior/humble/humble_01.jpg') }),
           new THREE.MeshStandardMaterial({ side: THREE.BackSide, transparent: true, map: textureLoader.load('./images/Square/interior/humble/humble_02.jpg') }),
@@ -193,13 +196,13 @@ class Scene_Event {
     this.squareMesh.children[0].material.roughnessMap = this.squareMapSrc.roughness[0];
     this.squareMesh.children[1].material = this.squareMapSrc.backSideMap[0];
 
-    for (let i = 0; i < this.sphereMapSrc.basic.length; i++) {
+    for (let i = 0; i < this.basicLen; i++) {
       this.sphereMapSrc.basic[i].colorSpace = THREE.SRGBColorSpace;
       this.sphereMapSrc.backSideMap[i].colorSpace = THREE.SRGBColorSpace;
       this.squareMapSrc.basic[i].colorSpace = THREE.SRGBColorSpace;
       this.squareMapSrc.backSideMap[i].colorSpace = THREE.SRGBColorSpace;
 
-      for (let ii = 0; ii < this.squareMapSrc.backSideMap[i].length; ii++) {
+      for (let ii = 0; ii < this.squareBackLen; ii++) {
         this.squareMapSrc.backSideMap[i][ii].map.colorSpace = THREE.SRGBColorSpace;
       }
     }
@@ -239,22 +242,20 @@ class Mouse_Event {
 
   hoverEvent(event) {
     this.hoverCheck = true;
+    if (!this.hoverCheck) return;
     this.event = event;
     console.log(this.event, '# 마우스 HOVER!');
-
-    if (!this.hoverCheck) return;
     this.event.target.classList.add('on');
-    if (this.event.target.id === 'sphere') this.sphereHoverAct();
-    if (this.event.target.id === 'square') this.squareHoverAct();
+    this.mouseHoverAct();
   }
 
   LeaveEvent(event) {
     this.leaveCheck = true;
     if (!this.leaveCheck) return;
     this.event = event;
-    this.startWrap_btns.forEach((btns) => { btns.classList.remove('on'); });
     console.log(this.event, '# 마우스 LEAVE!');
-    this.objectLeaveAct();
+    this.startWrap_btns.forEach((btns) => { btns.classList.remove('on'); });
+    this.mouseLeaveAct();
   }
 
   clickEvent() {
@@ -264,28 +265,23 @@ class Mouse_Event {
         this.hoverCheck = false;
         console.log(this.button, '# 마우스 CLICK!');
 
-
         // 시작 버튼들
         if (this.button.target.parentNode.id === 'start_wrap') {
           scene_E.orbit.enableRotate = true;
           scene_E.orbit.enableZoom = true;
           this.startWrap.classList.add('displayN');
-          console.log(this.button.target.id);
-          
-          setTimeout(() => { this.objectWrap.classList.add(`${this.button.target.id}`); }, 2000)
+          setTimeout(() => { this.objectWrap.classList.add(`${this.button.target.id}`); }, 2000);
 
-          if (this.button.target.id === 'sphere') this.sphereClickAct().restart();
-          if (this.button.target.id === 'square') this.squareClickAct().restart();
-
-          this.timeLine_C.eventCallback('onUpdate', () => { this.container.style.pointerEvents = 'none'; })
+          this.mouseClickAct().restart();
           this.timeLine_C.eventCallback('onComplete', () => {
             scene_E.isRotating = true;
+            scene_E.orbit.maxDistance = 7;
             scene_E.ambientLight.intensity = 3;
-            this.container.style.pointerEvents = 'auto';
           })
         }
 
         if (this.button.target.parentNode.id === 'sphere' || this.button.target.parentNode.id === 'square') {
+
           if (this.button.target.className === 'prev on') {
             switch (this.button.target.parentNode.id) {
               case 'sphere': this.sphereNum--; break;
@@ -305,16 +301,15 @@ class Mouse_Event {
             if (this.squareNum === this.imgLength + 1) this.squareNum = 1;
           }
 
-          // if (this.sphereNum === 4 || this.sphereNum === 4) scene_E.ambientLight.intensity = 5;
-          // else scene_E.ambientLight.intensity = 2;
-
           scene_E.sphereMesh.children[0].material.map = scene_E.sphereMapSrc.basic[this.sphereNum - 1];
           scene_E.sphereMesh.children[0].material.normalMap = scene_E.sphereMapSrc.normal[this.sphereNum - 1];
           scene_E.sphereMesh.children[0].material.roughnessMap = scene_E.sphereMapSrc.roughness[this.sphereNum - 1];
+          scene_E.sphereMesh.children[1].material.map = scene_E.sphereMapSrc.backSideMap[this.sphereNum - 1];
 
           scene_E.squareMesh.children[0].material.map = scene_E.squareMapSrc.basic[this.squareNum - 1];
           scene_E.squareMesh.children[0].material.normalMap = scene_E.squareMapSrc.normal[this.squareNum - 1];
           scene_E.squareMesh.children[0].material.roughnessMap = scene_E.squareMapSrc.roughness[this.squareNum - 1];
+          scene_E.squareMesh.children[1].material = scene_E.squareMapSrc.backSideMap[this.squareNum - 1];
         }
 
 
@@ -344,22 +339,26 @@ class Mouse_Event {
           scene_E.sphereMesh.children[1].material.map = scene_E.sphereMapSrc.backSideMap[this.sphereNum - 1];
           scene_E.squareMesh.children[1].material = scene_E.squareMapSrc.backSideMap[this.squareNum - 1];
 
+
           if (this.button.target.id === 'return') {
             console.log('# Return button!');
             scene_E.isRotating = false;
             scene_E.orbit.enableZoom = false;
             scene_E.orbit.enableRotate = false;
+            scene_E.orbit.maxDistance = 300;
+
+            scene_E.sphereMesh.children[0].material.map = scene_E.sphereMapSrc.basic[this.sphereNum - 1];
+            scene_E.sphereMesh.children[0].material.normalMap = scene_E.sphereMapSrc.normal[this.sphereNum - 1];
+            scene_E.sphereMesh.children[0].material.roughnessMap = scene_E.sphereMapSrc.roughness[this.sphereNum - 1];
+
+            scene_E.squareMesh.children[0].material.map = scene_E.squareMapSrc.basic[this.squareNum - 1];
+            scene_E.squareMesh.children[0].material.normalMap = scene_E.squareMapSrc.normal[this.squareNum - 1];
+            scene_E.squareMesh.children[0].material.roughnessMap = scene_E.squareMapSrc.roughness[this.squareNum - 1];
+
             this.objectWrap.className = '';
-            this.sphereNum, this.squareNum = 1;
-            console.log(this.startWrap);
-            
-            
-            if (this.objectWrap.classList.value === 'sphere') this.sphereClickAct().reverse();
-            else this.squareClickAct().reverse();
-            
+            this.mouseClickAct().reverse();
             this.timeLine_C.eventCallback('onReverseComplete', () => {
               scene_E.ambientLight.intensity = 2;
-              this.container.style.pointerEvents = 'auto';
               this.startWrap.classList.remove('displayN');
               this.timeLine_C.clear();
             })
@@ -369,51 +368,52 @@ class Mouse_Event {
     });
   }
 
-  sphereHoverAct() {
-    this.timeLine_H
-      .to(this.sphereBtn, { duration: 0.3, scale: 1.4, x: 180, width: 400, })
-      .to(this.squareBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
-      .to(scene_E.sphereMesh.position, { duration: 0.5, x: 0, y: 15, z: 50, ease: "power4.inOut", }, '<')
+  mouseHoverAct() {
+    if (this.event.target.id === 'sphere') {
+      this.timeLine_H
+        .to(this.sphereBtn, { duration: 0.3, scale: 1.4, x: 180, width: 400, })
+        .to(this.squareBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
+        .to(scene_E.sphereMesh.position, { duration: 0.5, x: 0, y: 15, z: 50, ease: "power4.inOut", }, '<')
+    }
+    if (this.event.target.id === 'square') {
+      this.timeLine_H
+        .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180, width: 400, })
+        .to(this.sphereBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
+        .to(scene_E.squareMesh.position, { duration: 0.5, x: 0, y: 15, z: 48, ease: "power4.inOut", }, '<')
+    }
+    return this.timeLine_H;
   }
 
-  squareHoverAct() {
-    this.timeLine_H
-      .to(this.squareBtn, { duration: 0.3, scale: 1.4, x: -180, width: 400, })
-      .to(this.sphereBtn, { duration: 0.3, opacity: 0, y: 200 }, '<')
-      .to(scene_E.squareMesh.position, { duration: 0.5, x: 0, y: 15, z: 48, ease: "power4.inOut", }, '<')
-  }
-
-  objectLeaveAct() {
+  mouseLeaveAct() {
     this.timeLine_L
       .to(this.sphereBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300 })
       .to(this.squareBtn, { duration: 0.3, scale: 1, opacity: 1, x: 0, y: 0, width: 300 }, '<')
-      .to(scene_E.sphereMesh.position, { x: -20, y: 0, z: 0, ease: "power4.inOut", }, '<')
+      .to(scene_E.sphereMesh.position, { x: -20, y: 0, z: 0, ease: " ower4.inOut", }, '<')
       .to(scene_E.squareMesh.position, { x: 20, y: 0, z: 0, ease: "power4.inOut", }, '<')
+    return this.timeLine_L;
   }
 
-  sphereClickAct() {
-    this.timeLine_C
-      .to(scene_E.sphereMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
-      .to(scene_E.squareMesh.position, { duration: 0.7, x: 300, y: 20, z: 0 }, '<')
-      .to(scene_E.camera.position, { duration: 2, x: 0, y: 0, z: 1, ease: "power2.inOut" }, '<')
-    return this.timeLine_C;
-  }
+  mouseClickAct() {
+    let _duration = 1.5;
+    let _posX = 300;
+    if (this.event.target.id === 'sphere') {
+      this.timeLine_C
+        .to(scene_E.sphereMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
+        .to(scene_E.squareMesh.position, { duration: 0.7, x: _posX, y: 20, z: 0 }, '<')
+        .to(scene_E.camera.position, { duration: _duration, x: 0, y: 0, z: 1, ease: "power2.inOut" }, '<')
+    }
+    if (this.event.target.id === 'square') {
+      this.timeLine_C
+        .to(scene_E.squareMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
+        .to(scene_E.sphereMesh.position, { duration: 0.7, x: -_posX, y: 20, z: 0 }, '<')
+        .to(scene_E.camera.position, { duration: _duration, x: 0, y: 0, z: 1, ease: "power2.inOut" }, '<')
+    }
 
-  squareClickAct() {
-    this.timeLine_C
-      .to(scene_E.squareMesh.position, { duration: 0.3, x: 0, y: 0, z: 0 }, '0.5')
-      .to(scene_E.sphereMesh.position, { duration: 0.7, x: -300, y: 20, z: 0 }, '<')
-      .to(scene_E.camera.position, { duration: 2, x: 0, y: 0, z: 1, ease: "power2.inOut" }, '<')
     return this.timeLine_C;
   }
 }
 
-
 const scene_E = new Scene_Event();
-const mouse_E = new Mouse_Event('#wrap', scene_E.sphereMapSrc.basic.length);
+const mouse_E = new Mouse_Event('#wrap', 5);
 console.log('# Scene_Event', scene_E);
 console.log('# Mouse_Event', mouse_E);
-
-
-
-
