@@ -25,14 +25,16 @@ class Scene_Event {
   init() {
     // scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color("#eee");
+    this.scene.background = new THREE.Color("#fff");
 
     // camera
     this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 1, 1000);
-    this.camera.position.set(0, 0, 15);
+    this.camera.position.set(0, 0, 50);
     // let cameraPos = 30;
     // this.camera.position.set(cameraPos, cameraPos, cameraPos);
 
+    // Fog
+    this.scene.fog = new THREE.Fog("#ffffff", 60, 150);
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -82,11 +84,17 @@ class Scene_Event {
   }
 
   requestAnimation() {
-    // this.targetNum += 0.01;
+    this.targetNum += 0.05;
     // this.moveZ += (this.targetNum - this.moveZ) * (this.moveZ > 210 ? 0.0002 : 0.001);
     this.moveZ += (this.targetNum - this.moveZ) * 0.005;
     console.log(this.targetNum - this.moveZ);
     this.boxGroup.position.z = this.moveZ;
+
+    if (this.moveZ > 250) {
+      this.scene.fog = new THREE.Fog("#000000", 100, 200);
+    } else {
+      this.scene.fog = new THREE.Fog("#ffffff", 60, 100);
+    }
 
     this.camera.lookAt(this.scene.position);
     this.renderer.render(this.scene, this.camera);
@@ -133,15 +141,19 @@ class Scene_Event {
   }
 
   scrollEvent(event, deltaY) {
+    console.log(this.moveZ);
+
     if (deltaY < 0) {
+
+      this.targetNum -= this.depthNum;
       if (this.targetNum > -20) {
-        this.targetNum -= this.depthNum;
       }
     } else {
-      if (this.targetNum < 250) {
-        this.targetNum += this.depthNum;
-      }
+      this.targetNum += this.depthNum;
     }
+
+
+
     console.log(this.targetNum);
   }
 }
@@ -188,4 +200,4 @@ const imagesPath = [
 
 const scene_E = new Scene_Event(imagesPath);
 console.log('# Scene_Event', scene_E);
-window.addEventListener('scroll', (e) => { scene_E.scrollEvent(e, e.deltaY) })
+window.addEventListener('wheel', (e) => { scene_E.scrollEvent(e, e.deltaY) })
