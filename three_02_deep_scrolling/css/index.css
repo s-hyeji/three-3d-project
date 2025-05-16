@@ -1,0 +1,25 @@
+
+.displayN{display: none !important;}
+
+button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+#wrap {
+  padding: 20px;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+canvas {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+
