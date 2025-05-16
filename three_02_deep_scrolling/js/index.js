@@ -90,11 +90,11 @@ class Scene_Event {
     console.log(this.targetNum - this.moveZ);
     this.boxGroup.position.z = this.moveZ;
 
-    if (this.moveZ > 250) {
-      this.scene.fog = new THREE.Fog("#000000", 100, 200);
-    } else {
-      this.scene.fog = new THREE.Fog("#ffffff", 60, 100);
-    }
+    // if (this.moveZ > 250) {
+    //   this.scene.fog = new THREE.Fog("#000000", 100, 200);
+    // } else {
+    //   this.scene.fog = new THREE.Fog("#ffffff", 60, 100);
+    // }
 
     this.camera.lookAt(this.scene.position);
     this.renderer.render(this.scene, this.camera);
