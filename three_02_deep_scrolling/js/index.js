@@ -7,13 +7,13 @@ class Scene_Event {
     this.wrap = document.querySelector('#wrap');
     this.canvasWrap = document.querySelector('#canvasWrap');
     this.imagesPath = imagesPath;
+    this.moveX = this.moveY = this.moveZ = this.targetNum = this.mouseX = this.mouseY = 0;
     this.vector_1_len = 7;
     this.totalBox = this.imagesPath.length;
-    this.moveX = this.moveY = this.moveZ = this.targetNum = this.mouseX = this.mouseY = 0;
     this.depthNum = 30;
     this.speed = 10;
     this.maxDepth = (this.totalBox * this.depthNum) - 140;
-    this.progressBar = document.querySelector('.bar')
+    this.progressBar = document.querySelector('.bar');
 
     this.init();
     this.setObject();
@@ -123,7 +123,7 @@ class Scene_Event {
     const floorMesh = new THREE.Mesh(floorGeometry, floormaterial);
     bgMesh.position.set(0, 30, -270);
     floorMesh.position.set(0, -10, -240);
-    floorMesh.rotation.set(-1.6, 0, 0)
+    floorMesh.rotation.set(-1.6, 0, 0);
 
     this.boxGroup.add(bgMesh);
     this.boxGroup.add(floorMesh);
@@ -140,11 +140,11 @@ class Scene_Event {
     //   }
     // }
     let scrolly = window.scrollY;
-    let pageNum = Math.ceil(scrolly / 100)
+    let pageNum = Math.ceil(scrolly / 100);
     this.targetNum = (67 * pageNum) / 10;
 
     let perNum = Math.ceil((scrolly / (document.body.offsetHeight - window.innerHeight)) * 100);
-    this.progressBar.style.width = `${perNum}%`
+    this.progressBar.style.width = `${perNum}%`;
   }
 }
 
@@ -190,9 +190,9 @@ const imagesPath = [
 
 const scene_E = new Scene_Event(imagesPath);
 // window.addEventListener('wheel', (e) => { scene_E.scrollEvent(e, e.deltaY) })
-window.addEventListener('scroll', () => { scene_E.scrollEvent(); })
+window.addEventListener('scroll', () => { scene_E.scrollEvent(); });
 window.addEventListener('mousemove', (e) => {
   scene_E.mouseX = e.clientX;
   scene_E.mouseY = e.clientY;
 })
-window.addEventListener('load', () => { setTimeout(() => { window.scrollTo(0, 0); }, 10); })
+window.addEventListener('load', () => { setTimeout(() => { window.scrollTo(0, 0); }, 10); });
