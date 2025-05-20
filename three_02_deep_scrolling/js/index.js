@@ -85,7 +85,7 @@ class Scene_Event {
     this.moveX += (this.mouseX - this.moveX - innerWidth / 2) * 0.05;
     this.moveY += (this.mouseY - this.moveY - innerWidth / 2) * 0.05;
 
-    this.boxGroup.position.x = -(this.moveX / 100);
+    this.boxGroup.position.x = -(this.moveX / 80);
     this.boxGroup.position.y = this.moveY / 100;
 
     requestAnimationFrame(() => this.requestAnimation());
