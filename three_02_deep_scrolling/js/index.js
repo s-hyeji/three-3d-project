@@ -4,16 +4,16 @@ import { gsap } from 'gsap';
 
 class Scene_Event {
   constructor(imagesPath) {
-    // 메쉬 선언
     this.wrap = document.querySelector('#wrap');
-    this.width = 1280;
-    this.height = 720;
+    this.canvasWrap = document.querySelector('#canvasWrap');
     this.imagesPath = imagesPath;
-    this.vector_1_len = 7
-    this.depthNum = 30;
+    this.vector_1_len = 7;
     this.totalBox = this.imagesPath.length;
-    this.maxDepth = 240;
-    this.moveZ = this.targetNum = 0;
+    this.moveX = this.moveY = this.moveZ = this.targetNum = this.mouseX = this.mouseY = 0;
+    this.depthNum = 30;
+    this.speed = 10;
+    this.maxDepth = (this.totalBox * this.depthNum) - 140;
+    this.progressBar = document.querySelector('.bar')
 
     this.init();
     this.setObject();
@@ -23,44 +23,41 @@ class Scene_Event {
   }
 
   init() {
+    document.body.style.height = `${window.innerHeight + this.totalBox * this.depthNum * 10}px`;
+
     // scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#fff");
 
     // camera
-    this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 1, 1000);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
     this.camera.position.set(0, 0, 50);
-    // let cameraPos = 30;
-    // this.camera.position.set(cameraPos, cameraPos, cameraPos);
 
     // Fog
-    this.scene.fog = new THREE.Fog("#ffffff", 60, 150);
+    let fogNear = 60;
+    let fogFar = 100;
+    this.scene.fog = new THREE.Fog("#ffffff", fogNear, fogFar);
 
     // renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(this.width, this.height);
-    this.wrap.prepend(this.renderer.domElement);
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.canvasWrap.appendChild(this.renderer.domElement);
 
     // OrbitControls
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
     this.orbit.enableDamping = true;
     this.orbit.rotateSpeed = -0.5;
-    this.orbit.enableZoom = true;
-    // this.orbit.enableZoom = false;
-    // this.orbit.enableRotate = false;
-
+    this.orbit.enableZoom = false;
+    this.orbit.enableRotate = false;
 
     // Object3D
     this.boxGroup = new THREE.Object3D();
     this.scene.add(this.boxGroup);
-    this.scrollEvent();
 
     const textureLoader = new THREE.TextureLoader();
     let vector_map, imagesWidth, imagesHeight;
-
     this.vector_Bg_map = textureLoader.load('./images/vector_2/bg.jpg');
     this.vector_Bg_map.colorSpace = THREE.SRGBColorSpace;
-
 
     for (let i = 0; i < this.totalBox; i++) {
       vector_map = textureLoader.load(this.imagesPath[i].src);
@@ -69,12 +66,6 @@ class Scene_Event {
       imagesHeight = i < this.vector_1_len ? this.imagesPath[i].height : 22;
       this.setObject(i, vector_map, imagesWidth, imagesHeight);
     }
-
-    // this.directionalLight = new THREE.DirectionalLight(0xffffff, 2);
-    // this.directionalLight.position.set(-20, 10, 100);
-    // this.ambientLight = new THREE.AmbientLight(0xffffff, 2);
-    // this.scene.add(this.directionalLight);
-    // this.scene.add(this.ambientLight);
   }
 
   initHelper() {
@@ -84,29 +75,27 @@ class Scene_Event {
   }
 
   requestAnimation() {
-    this.targetNum += 0.05;
-    // this.moveZ += (this.targetNum - this.moveZ) * (this.moveZ > 210 ? 0.0002 : 0.001);
-    this.moveZ += (this.targetNum - this.moveZ) * 0.005;
-    console.log(this.targetNum - this.moveZ);
-    this.boxGroup.position.z = this.moveZ;
-
-    // if (this.moveZ > 250) {
-    //   this.scene.fog = new THREE.Fog("#000000", 100, 200);
-    // } else {
-    //   this.scene.fog = new THREE.Fog("#ffffff", 60, 100);
-    // }
-
     this.camera.lookAt(this.scene.position);
     this.renderer.render(this.scene, this.camera);
     this.orbit.update();
+
+    this.moveZ += (this.targetNum - this.moveZ) * 0.07;
+    this.boxGroup.position.z = this.moveZ;
+
+    this.moveX += (this.mouseX - this.moveX - innerWidth / 2) * 0.05;
+    this.moveY += (this.mouseY - this.moveY - innerWidth / 2) * 0.05;
+
+    this.boxGroup.position.x = -(this.moveX / 100);
+    this.boxGroup.position.y = this.moveY / 100;
+
     requestAnimationFrame(() => this.requestAnimation());
   }
 
   windowResize() {
     window.addEventListener('resize', () => {
       this.camera.updateProjectionMatrix();
-      this.camera.aspect = this.width / this.height;
-      this.renderer.setSize(this.width, this.height);
+      this.camera.aspect = window.innerWidth / window.innerHeight;
+      this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
   }
 
@@ -127,12 +116,12 @@ class Scene_Event {
 
   setCustomObject() {
     const beGeometry = new THREE.PlaneGeometry(350, 100);
-    const floorGeometry = new THREE.PlaneGeometry(350, 100);
+    const floorGeometry = new THREE.PlaneGeometry(350, 50);
     const beMaterial = new THREE.MeshBasicMaterial({ map: this.vector_Bg_map, transparent: true, side: THREE.FrontSide });
     const floormaterial = new THREE.MeshBasicMaterial({ side: THREE.FrontSide, color: 0x000000 });
     const bgMesh = new THREE.Mesh(beGeometry, beMaterial);
     const floorMesh = new THREE.Mesh(floorGeometry, floormaterial);
-    bgMesh.position.set(0, 30, -300);
+    bgMesh.position.set(0, 30, -270);
     floorMesh.position.set(0, -10, -240);
     floorMesh.rotation.set(-1.6, 0, 0)
 
@@ -140,21 +129,22 @@ class Scene_Event {
     this.boxGroup.add(floorMesh);
   }
 
-  scrollEvent(event, deltaY) {
-    console.log(this.moveZ);
+  scrollEvent() {
+    // if (deltaY < 0) {
+    //   if (this.targetNum > 0) {
+    //     this.targetNum -= this.speed;
+    //   }
+    // } else {
+    //   if (this.targetNum < this.maxDepth) {
+    //     this.targetNum += this.speed;
+    //   }
+    // }
+    let scrolly = window.scrollY;
+    let pageNum = Math.ceil(scrolly / 100)
+    this.targetNum = (67 * pageNum) / 10;
 
-    if (deltaY < 0) {
-
-      this.targetNum -= this.depthNum;
-      if (this.targetNum > -20) {
-      }
-    } else {
-      this.targetNum += this.depthNum;
-    }
-
-
-
-    console.log(this.targetNum);
+    let perNum = Math.ceil((scrolly / (document.body.offsetHeight - window.innerHeight)) * 100);
+    this.progressBar.style.width = `${perNum}%`
   }
 }
 
@@ -199,5 +189,10 @@ const imagesPath = [
 
 
 const scene_E = new Scene_Event(imagesPath);
-console.log('# Scene_Event', scene_E);
-window.addEventListener('wheel', (e) => { scene_E.scrollEvent(e, e.deltaY) })
+// window.addEventListener('wheel', (e) => { scene_E.scrollEvent(e, e.deltaY) })
+window.addEventListener('scroll', () => { scene_E.scrollEvent(); })
+window.addEventListener('mousemove', (e) => {
+  scene_E.mouseX = e.clientX;
+  scene_E.mouseY = e.clientY;
+})
+window.addEventListener('load', () => { setTimeout(() => { window.scrollTo(0, 0); }, 10); })

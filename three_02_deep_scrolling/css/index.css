@@ -1,5 +1,6 @@
-
-.displayN{display: none !important;}
+.displayN {
+  display: none !important;
+}
 
 button {
   margin: 0;
@@ -11,15 +12,37 @@ button {
   box-sizing: border-box;
 }
 
-#wrap {
+/* #wrap {
   padding: 20px;
   user-select: none;
   box-sizing: border-box;
+  overflow: unset;
+} */
+
+body {}
+
+#canvasWrap {
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
 }
 
-canvas {
+#progress {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 4px;
+  background-color: #eee;
+  z-index: 10;
+}
+
+#progress .bar {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  width: 0%;
+  height: 100%;
+  border-radius: 5px;
+  background-image: linear-gradient(-225deg, #473B7B 0%, #3584A7 51%, #30D2BE 100%);
+  transition: width 0.2s ease-out;
 }
-
