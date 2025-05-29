@@ -6,8 +6,7 @@ import Player from './object/Player.js';
 
 class Scene {
   constructor() {
-    this.wrap = document.querySelector('#wrap');
-    this.canvasWrap = document.querySelector('#canvasWrap');
+    this.wrap = document.querySelector('#canvasWrap');
 
     this.isClick = true;
     this.isCameraAuto = true; // 카메라 자동 애니메이션 제어 플래그 추가
@@ -17,7 +16,7 @@ class Scene {
   init() {
     // scene 설정
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color("#fff");
+    this.scene.background = new THREE.Color("#ddd");
 
     // camera 설정
     this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1000);
@@ -33,14 +32,14 @@ class Scene {
     // renderer 설정
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.canvasWrap.appendChild(this.renderer.domElement);
+    this.wrap.appendChild(this.renderer.domElement);
 
     // lights 설정
-    this.ambientLight = new THREE.AmbientLight("#eee", 4);
+    this.ambientLight = new THREE.AmbientLight("#fff", 4);
     this.scene.add(this.ambientLight);
 
     this.pointLight = new THREE.PointLight('#fff', 1);
-    this.pointLight.position.set(10, 30, 10);
+    
     this.pointLight.castShadow = true;
     this.pointLight.shadow.mapSize.width = 1024;
     this.pointLight.shadow.mapSize.height = 1024;
@@ -56,10 +55,7 @@ class Scene {
     this.orbit.rotateSpeed = -0.5;
     this.orbit.minDistance = 10;
     this.orbit.maxDistance = 100;
-    this.orbit.maxPolarAngle = Math.PI / 2; // 최대 상하 각도 (라디안)
-
-    // OrbitControls 이벤트로 카메라 자동 애니메이션 중단/재개
-
+    this.orbit.maxPolarAngle = Math.PI / 2;
 
     this.createObject();
     this.initHelper();
@@ -69,7 +65,7 @@ class Scene {
   initHelper() {
     this.scene.add(new THREE.AxesHelper(100));
     this.scene.add(new THREE.GridHelper(100, 20));
-    // this.scene.add(new THREE.PointLightHelper(this.pointLight));
+    this.scene.add(new THREE.PointLightHelper(this.pointLight));
   }
 
   windowResize() {
@@ -108,7 +104,6 @@ class Scene {
     let c_moveX = this.player.position().moveX;
     let c_moveZ = this.player.position().moveZ;
 
-
     // 카메라 위치를 lerp로 부드럽게 이동 (즉시 반응 + 부드러움)
     if (this.isCameraAuto) {
       let lerpFactor = 0.05;
@@ -117,8 +112,9 @@ class Scene {
       this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, -30 + c_moveZ, lerpFactor);
       this.camera.lookAt(c_moveX, 10, 5 + c_moveZ);
     }
-
+    
     this.renderer.render(this.scene, this.camera);
+    this.pointLight.position.set(10 + c_moveX, 30, 10 + c_moveZ);
     this.orbit.target.set(c_moveX, 10, 5 + c_moveZ);
     this.orbit.update();
 
@@ -146,8 +142,6 @@ console.warn = function (msg, ...args) {
       msg.includes("THREE.FBXLoader: ShininessExponent map is not supported in three.js") ||
       msg.includes("THREE.FBXLoader: Vertex has more than 4 skinning weights assigned to vertex")
     )
-  ) {
-    return; // 해당 경고는 무시
-  }
+  ) return; // 해당 경고는 무시
   originalWarn.apply(console, [msg, ...args]);
 };
