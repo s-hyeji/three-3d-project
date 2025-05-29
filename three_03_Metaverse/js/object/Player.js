@@ -4,13 +4,13 @@ import { gsap } from 'gsap';
 
 export default class Player {
   constructor(player, src) {
-    this.player = player;
+    this.obj = player;
     this.src = src;
-    this.player.scale.set(0.1, 0.1, 0.1);
+    this.obj.scale.set(0.1, 0.1, 0.1);
+    this.obj.position.x = 0.3;
+    this.obj.traverse((child) => { if (child.isMesh) child.castShadow = true; });
     this.moveZ = this.moveX = 0;
     this.speed = 0.4;
-
-    console.log(this.player);
   }
 
   setAction() {
@@ -21,9 +21,9 @@ export default class Player {
     );
     this.mixerArr = [];
     this.actions = {};
-    this.mixer = new THREE.AnimationMixer(this.player);
+    this.mixer = new THREE.AnimationMixer(this.obj);
     this.mixerArr.push(this.mixer);
-    this.actions.standing = this.mixer.clipAction(this.player.animations[0]);
+    this.actions.standing = this.mixer.clipAction(this.obj.animations[0]);
     this.actions.standing.play();
 
   }
@@ -59,17 +59,17 @@ export default class Player {
     if (key.keyDown['down'] && key.keyDown['left']) direction = 3 * Math.PI / 4;
 
     // 이동
-    if (key.keyDown['up']) this.player.position.z += this.moveZ + this.speed;
-    if (key.keyDown['down']) this.player.position.z -= this.moveZ + this.speed;
-    if (key.keyDown['left']) this.player.position.x += this.moveX + this.speed;
-    if (key.keyDown['right']) this.player.position.x -= this.moveX + this.speed;
+    if (key.keyDown['up']) this.obj.position.z += this.moveZ + this.speed;
+    if (key.keyDown['down']) this.obj.position.z -= this.moveZ + this.speed;
+    if (key.keyDown['left']) this.obj.position.x += this.moveX + this.speed;
+    if (key.keyDown['right']) this.obj.position.x -= this.moveX + this.speed;
 
     // 자연스러운 회전(가장 짧은 방향으로)
     if (direction !== null) {
-      let currentY = this.player.rotation.y;
+      let currentY = this.obj.rotation.y;
       let delta = ((direction - currentY + Math.PI) % (2 * Math.PI)) - Math.PI;
       let shortestY = currentY + delta;
-      gsap.to(this.player.rotation, { y: shortestY, duration: 0.3, ease: "power2.out" });
+      gsap.to(this.obj.rotation, { y: shortestY, duration: 0.3, ease: "power2.out" });
     }
 
 
@@ -85,8 +85,8 @@ export default class Player {
 
   position() {
     return {
-      moveX: this.player.position.x,
-      moveZ: this.player.position.z,
+      moveX: this.obj.position.x,
+      moveZ: this.obj.position.z,
     }
   }
 }
