@@ -8,39 +8,78 @@ export default class Player {
     this.src = src;
     this.player.scale.set(0.1, 0.1, 0.1);
     this.moveZ = this.moveX = 0;
-    this.speed = 0.5;
+    this.speed = 0.4;
 
     console.log(this.player);
-    this.player.load()
   }
 
-  keyboardEvent() {
+  setAction() {
+    const fbxLoader = new FBXLoader();
+    fbxLoader.load(
+      this.src.running,
+      (runObj) => { this.actions.running = this.mixer.clipAction(runObj.animations[0]); }
+    );
+    this.mixerArr = [];
+    this.actions = {};
+    this.mixer = new THREE.AnimationMixer(this.player);
+    this.mixerArr.push(this.mixer);
+    this.actions.standing = this.mixer.clipAction(this.player.animations[0]);
+    this.actions.standing.play();
 
-    if (key.keyDown['up']) {
-      this.player.position.z += this.moveZ + this.speed;
-      gsap.to(this.player.rotation, { y: 0 });
+  }
+
+  keyEvent() {
+    let fadeTime = 0.2;
+    if (this.actions && this.actions.running && this.actions.standing) {
+      if (key.keyDown['up'] || key.keyDown['down'] || key.keyDown['left'] || key.keyDown['right']) {
+        if (!this.actions.running.isRunning()) {
+          this.actions.standing.fadeOut(fadeTime);
+          this.actions.running.reset().fadeIn(fadeTime).play();
+        }
+      } else {
+        if (!this.actions.standing.isRunning()) {
+          this.actions.running.fadeOut(fadeTime);
+          this.actions.standing.reset().fadeIn(fadeTime).play();
+        }
+      }
     }
 
-    if (key.keyDown['down']) {
-      this.player.position.z -= this.moveZ + this.speed;
-      gsap.to(this.player.rotation, { y: 3 });
+    // 현재 각도와 목표 각도 계산
+    let direction = null;
+
+    if (key.keyDown['up']) direction = 0;
+    if (key.keyDown['down']) direction = Math.PI;
+    if (key.keyDown['left']) direction = Math.PI / 2;
+    if (key.keyDown['right']) direction = -Math.PI / 2;
+
+    // 대각선 처리
+    if (key.keyDown['up'] && key.keyDown['right']) direction = -Math.PI / 4;
+    if (key.keyDown['up'] && key.keyDown['left']) direction = Math.PI / 4;
+    if (key.keyDown['down'] && key.keyDown['right']) direction = -3 * Math.PI / 4;
+    if (key.keyDown['down'] && key.keyDown['left']) direction = 3 * Math.PI / 4;
+
+    // 이동
+    if (key.keyDown['up']) this.player.position.z += this.moveZ + this.speed;
+    if (key.keyDown['down']) this.player.position.z -= this.moveZ + this.speed;
+    if (key.keyDown['left']) this.player.position.x += this.moveX + this.speed;
+    if (key.keyDown['right']) this.player.position.x -= this.moveX + this.speed;
+
+    // 자연스러운 회전(가장 짧은 방향으로)
+    if (direction !== null) {
+      let currentY = this.player.rotation.y;
+      let delta = ((direction - currentY + Math.PI) % (2 * Math.PI)) - Math.PI;
+      let shortestY = currentY + delta;
+      gsap.to(this.player.rotation, { y: shortestY, duration: 0.3, ease: "power2.out" });
     }
 
-    if (key.keyDown['left']) {
-      this.player.position.x += this.moveX + this.speed;
-      gsap.to(this.player.rotation, { y: 1.5 });
-    }
-
-    if (key.keyDown['right']) {
-      this.player.position.x -= this.moveX + this.speed;
-      gsap.to(this.player.rotation, { y: 4.5 });
-      if (key.keyDown['up']) gsap.to(this.player.rotation, { y: 6 });
-    }
 
     if (key.keyDown['enter']) {
+      console.log('# 엔터');
+
     }
 
     if (key.keyDown['spaceBar']) {
+      console.log('# 스페이스 바');
     }
   }
 
