@@ -35,7 +35,7 @@ class Floor {
     // this.material.normalMap = maps.find(map => map.type === 'normal').texture;
     // this.material.roughnessMap = maps.find(map => map.type === 'roughness').texture;
     // this.material.displacementMap = maps.find(map => map.type === 'displacement').texture;
-    console.log(this.material);
+    // console.log(this.material);
   }
 }
 

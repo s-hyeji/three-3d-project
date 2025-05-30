@@ -14,7 +14,7 @@ class Sky {
   }
 }
 
-const geometry = new THREE.SphereGeometry(300, 50, 50);
+const geometry = new THREE.SphereGeometry(250, 50, 50);
 const material = new THREE.MeshStandardMaterial({ color: '#b4d9fd', side: THREE.DoubleSide, transparent: true });
 const sphere = new THREE.Mesh(geometry, material);
 const sky = new Sky(material, sphere);

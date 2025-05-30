@@ -11,6 +11,7 @@ export default class Player {
     this.obj.traverse((child) => { if (child.isMesh) child.castShadow = true; });
     this.moveZ = this.moveX = 0;
     this.speed = 0.4;
+    this.setAction();
   }
 
   setAction() {
@@ -25,7 +26,6 @@ export default class Player {
     this.mixerArr.push(this.mixer);
     this.actions.standing = this.mixer.clipAction(this.obj.animations[0]);
     this.actions.standing.play();
-
   }
 
   keyEvent() {
