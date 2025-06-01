@@ -27,7 +27,7 @@ class Scene {
 
     // camera 설정
     this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1000);
-
+    this.camera.position.y = 100;
     // clock 설정
     this.clock = new THREE.Clock();
 
@@ -81,13 +81,18 @@ class Scene {
   }
 
   createObject() {
-    // 플레이어 생성
+    this.scene.add(this.floor.obj);
+    this.scene.add(this.sky.obj);
+
     const fbxLoader = new FBXLoader();
+    const objLoader = new OBJLoader();
+    const mtlLoader = new MTLLoader();
+    const textureLoader = new THREE.TextureLoader();
 
-
+    // 플레이어 생성
     const player_url = {
-      standing: './images/FBX/Standing.fbx',
-      running: './images/FBX/Running.fbx',
+      standing: './images/FBX/player/Standing.fbx',
+      running: './images/FBX/player/Running.fbx',
     }
     fbxLoader.load(
       player_url.standing,
@@ -98,50 +103,78 @@ class Scene {
       },
     )
 
-    fbxLoader.load(
-      './images/FBX/Nature.fbx',
-      (Object) => { this.nature = new Nature(Object); this.scene.add(Object); },
-    )
+
+
+
+
+    // 경찰서
+    let g1_duration = 0.7;
+    let g1_delay = 2;
+    let g2_delay = 0.3;
 
     fbxLoader.load(
-      './images/FBX/stone_01.fbx',
+      './images/FBX/police/Police_Station.fbx',
       (Object) => {
-        Object.position.set(-220, -65, -20);
-        Object.scale.set(1, 1, 1);
+        Object.position.set(160, 1, -50);
+        Object.scale.set(0, 0, 0);
+        Object.rotation.y = -Math.PI / 2.5;
+        Object.castShadow = true;
+        gsap.to(Object.scale, { x: 0.3, z: 0.3, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(Object.scale, { y: 0.3, delay: g2_delay }, '<');
+        Object.traverse((child) => { if (child.isMesh && child.material) child.material.color.set(0xffffff); });
         this.scene.add(Object);
       },
     )
 
-    const objLoader = new OBJLoader();
-    const mtlLoader = new MTLLoader();
-    // mtlLoader.load('./images/OBJ/Hut_01/hut_01.mtl', (mtl) => {
-    //   mtl.preload();
-    //   objLoader.setMaterials(mtl);
-    //   objLoader.load('./images/OBJ/Hut_01/hut_01.obj', (root) => {
-    //     this.scene.add(root);
-    //     root.position.set(150, -1, -30);
-    //     root.rotation.y = -Math.PI / 2;
-    //     root.scale.set(30, 30, 30);
-    //     root.castShadow = true;
-    //   });
-    // });
+    // 병원
+    fbxLoader.load(
+      './images/FBX/hospital/Hospital.fbx',
+      (Object) => {
+        Object.position.set(-150, -1, 80);
+        // Object.scale.set(2.2, 2.2, 2.2);
+        Object.scale.set(0, 0, 0);
+        Object.rotation.y = 0.5;
+        Object.castShadow = true;
+        gsap.to(Object.scale, { x: 2.5, z: 2.5, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(Object.scale, { y: 2.5, delay: g2_delay }, '<');
+        this.scene.add(Object);
+      },
+    )
 
-
+    // 은행
     mtlLoader.load('./images/OBJ/bank/bank.mtl', (mtl) => {
       objLoader.setMaterials(mtl);
-      objLoader.load('./images/OBJ/bank/bank.obj', (root) => {
-        this.scene.add(root);
-        root.position.set(50, 0, 130);
-        root.rotation.y = -Math.PI / 1.2;
-        root.scale.set(0.04, 0.04, 0.04);
-        root.castShadow = true;
+      objLoader.load('./images/OBJ/bank/bank.obj', (Object) => {
+        Object.position.set(90, 0, 150);
+        Object.rotation.y = -Math.PI / 1.2;
+        Object.scale.set(0, 0, 0);
+        Object.castShadow = true;
+        gsap.to(Object.scale, { x: 0.05, z: 0.05, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(Object.scale, { y: 0.05, delay: g2_delay }, '<');
+        this.scene.add(Object);
       });
     });
 
+    // 학교
+    const schoolMap = [
+      textureLoader.load('./images/OBJ/school/textures/School-Albedo.png'),
+      textureLoader.load('./images/OBJ/school/textures/School-Emissive.png')
+    ]
+    schoolMap.forEach((url) => { url.colorSpace = THREE.SRGBColorSpace; });
+    objLoader.load('./images/OBJ/school/School.obj', (Object) => {
+      Object.position.set(-40, -4.5, -140);
+      Object.rotation.y = Math.PI + 0.3;
+      // Object.scale.set(0.06, 0.06, 0.06);
+      Object.scale.set(0, 0, 0);
+      Object.castShadow = true;
+      Object.children[0].material.map = schoolMap[0];
+      Object.children[0].material.emissiveMap = schoolMap[1];
+      gsap.to(Object.scale, { x: 0.07, z: 0.07, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+      gsap.to(Object.scale, { y: 0.07, delay: g2_delay }, '<');
+      this.scene.add(Object);
+    });
 
-
-    this.scene.add(this.floor.obj);
-    this.scene.add(this.sky.obj);
+    // ==============================================
   }
 
   requestAnimation() {
@@ -149,7 +182,7 @@ class Scene {
     for (let i = 0; i < this.player.mixerArr.length; i++) {
       this.player.mixerArr[i].update(this.clock.getDelta());
     }
-
+    
     // 캐릭터 위치
     this.player.keyEvent();
     let c_moveX = this.player.position().moveX;
@@ -159,10 +192,7 @@ class Scene {
     if (this.isCameraAuto) {
       let lerpFactor = 0.05;
       this.camera.position.x = THREE.MathUtils.lerp(this.camera.position.x, c_moveX, lerpFactor);
-      // this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, 30, lerpFactor);
-      this.camera.position.y = THREE.MathUtils.lerp(this.camera.position.y, 150, lerpFactor);
-      // this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, -30 + c_moveZ, lerpFactor);
-      this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, -120 + c_moveZ, lerpFactor);
+      this.camera.position.z = THREE.MathUtils.lerp(this.camera.position.z, -50 + c_moveZ, lerpFactor);
       this.camera.lookAt(c_moveX, 10, c_moveZ);
     }
 

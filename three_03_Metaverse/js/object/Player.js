@@ -10,16 +10,23 @@ export default class Player {
     this.obj.position.x = 0.3;
     this.obj.traverse((child) => { if (child.isMesh) child.castShadow = true; });
     this.moveZ = this.moveX = 0;
-    this.speed = 0.4;
+    this.speed = 0.5;
     this.setAction();
   }
 
   setAction() {
     const fbxLoader = new FBXLoader();
-    fbxLoader.load(
-      this.src.running,
-      (runObj) => { this.actions.running = this.mixer.clipAction(runObj.animations[0]); }
-    );
+    // 여러 액션을 반복문으로 로드
+    const actionNames = Object.keys(this.src);
+
+    actionNames.forEach((action) => {
+      fbxLoader.load(
+        this.src[action],
+        (loadActions) => {
+          this.actions[action] = this.mixer.clipAction(loadActions.animations[0]);
+        }
+      );
+    });
     this.mixerArr = [];
     this.actions = {};
     this.mixer = new THREE.AnimationMixer(this.obj);
