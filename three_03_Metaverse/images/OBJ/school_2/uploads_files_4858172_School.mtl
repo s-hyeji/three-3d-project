@@ -1,0 +1,207 @@
+# Blender 3.6.5 MTL File: 'School.blend'
+# www.blender.org
+
+newmtl Base_Support
+Ka 1.000000 1.000000 1.000000
+Kd 0.242276 0.242276 0.242276
+Ks 0.202857 0.202857 0.202857
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/TexturesCom_Concrete_Base14_2x2_1K_roughness.tif
+map_Bump -bm 1.000000 C:/TexturesCom_Concrete_Base14_2x2_1K_normal.tif
+
+newmtl Base_Support_Side_wing
+Ka 1.000000 1.000000 1.000000
+Kd 0.242276 0.242276 0.242276
+Ks 0.202857 0.202857 0.202857
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/TexturesCom_Concrete_Base14_2x2_1K_roughness.tif
+map_Bump -bm 1.000000 C:/TexturesCom_Concrete_Base14_2x2_1K_normal.tif
+
+newmtl Brass_metal
+Ns 154.132751
+Ka 1.000000 1.000000 1.000000
+Ks 0.237143 0.237143 0.237143
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/TCom_Metal_BrassPolished_1K_albedo.tif
+map_refl C:/TCom_Metal_BrassPolished_1K_metallic.tif
+map_Bump -bm 1.000000 C:/TCom_Metal_BrassPolished_1K_normal.tif
+
+newmtl Clock
+Ns 140.089783
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+
+newmtl Concrete_base
+Ka 1.000000 1.000000 1.000000
+Kd 0.355950 0.355950 0.355950
+Ks 0.077143 0.077143 0.077143
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Ns C:/TCom_TerracottaFloor_1K_roughness.tif
+map_Bump -bm 0.100000 C:/TCom_TerracottaFloor_1K_normal.tif
+
+newmtl Glass
+Ns 902.500000
+Ka 1.000000 1.000000 1.000000
+Kd 0.002578 0.054107 0.115394
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Material
+Ns 91.914810
+Ka 1.000000 1.000000 1.000000
+Kd 0.001181 0.000000 0.057793
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Metal_Black
+Ns 559.387390
+Ka 1.000000 1.000000 1.000000
+Kd 0.133615 0.133615 0.133615
+Ks 0.197143 0.197143 0.197143
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl Metal_Bus
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.007926 0.007926 0.007926
+Ks 0.940000 0.940000 0.940000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+
+newmtl Road
+Ka 1.000000 1.000000 1.000000
+Ks 0.077143 0.077143 0.077143
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/TCom_Pavement_RoadWet_MixedLineYellow_1K_diffuse.tif
+map_Ns C:/TCom_Pavement_RoadWet_MixedLine_1K_roughness.tif
+map_Bump -bm 1.000000 C:/TCom_Pavement_RoadWet_MixedLine_1K_normal.tif
+
+newmtl Roof
+Ka 1.000000 1.000000 1.000000
+Ks 0.151429 0.151429 0.151429
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/concrete_floor_worn_001_diff_1k.jpg
+map_Ns C:/concrete_floor_worn_001_rough_1k.jpg
+map_Bump -bm 0.500000 C:/concrete_floor_worn_001_nor_gl_1k.exr
+
+newmtl Roof_Front
+Ka 1.000000 1.000000 1.000000
+Ks 0.128571 0.128571 0.128571
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/ceramic_roof_01_diff_1k.jpg
+map_Ns C:/ceramic_roof_01_rough_1k.jpg
+map_Bump -bm 1.000000 C:/ceramic_roof_01_nor_gl_1k.exr
+
+newmtl Shiney_Metal
+Ka 1.000000 1.000000 1.000000
+Ks 0.100000 0.100000 0.100000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
+map_Kd C:/TCom_Metal_SteelBattered_1K_albedo.tif
+map_Ns C:/TCom_Metal_SteelBattered_1K_roughness.tif
+map_refl C:/TCom_Metal_SteelBattered_1K_metallic.tif
+map_Bump -bm 1.000000 C:/TCom_Metal_SteelBattered_1K_normal.tif
+
+newmtl Tyre_Black
+Ns 70.811295
+Ka 1.000000 1.000000 1.000000
+Kd 0.012976 0.012976 0.012976
+Ks 0.351429 0.351429 0.351429
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Wall
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.743137 0.295195
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 0.200000 C:/TexturesCom_Brick_Glazed_1K_normal.tif
+
+newmtl Wall.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.743137 0.295195
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 0.200000 C:/TexturesCom_Brick_Glazed_1K_normal.tif
+
+newmtl Window_frame
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Ns C:/TexturesCom_Wood_Worn3_512_roughness.tif
+map_Bump -bm 0.100000 C:/TexturesCom_Wood_Worn3_512_normal.tif
+
+newmtl Wood
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.304981 0.187528 0.035846
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 0.100000 C:/TexturesCom_Wood_Worn3_512_normal.tif
+
+newmtl Wood.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.304981 0.187528 0.035846
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump -bm 0.100000 C:/TexturesCom_Wood_Worn3_512_normal.tif
