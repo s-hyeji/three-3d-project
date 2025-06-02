@@ -12,7 +12,6 @@ class Sky {
     this.objLoader = new OBJLoader();
     this.gltfLoader = new GLTFLoader();
     this.cloud = new THREE.Object3D();
-    this.barrier = new THREE.Object3D();
 
     this.setTexture();
     this.setObjects();
@@ -39,14 +38,6 @@ class Sky {
         this.cloud.add(Object);
       });
     }
-
-
-    this.barrier.name = 'barrier';
-    this.gltfLoader.load('./images/GLTF/barrier/scene.gltf', (Object) => {
-      this.barrier.add(Object.scene);
-      this.barrier.scale.set(8, 8, 8);
-      this.barrier.position.set(80, 0, 150);
-    });
   }
 
   initAnimation() {

@@ -80,9 +80,9 @@ class Scene {
 
   createObject() {
     this.scene.add(this.floor.obj);
+    this.scene.add(this.floor.barrier);
     this.scene.add(this.sky.obj);
     this.scene.add(this.sky.cloud);
-    this.scene.add(this.sky.barrier);
 
     const fbxLoader = new FBXLoader();
     const objLoader = new OBJLoader();
