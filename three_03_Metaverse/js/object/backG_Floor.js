@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OBJLoader } from 'OBJLoader';
+import { GLTFLoader } from 'GLTFLoader';
 import { MTLLoader } from 'MTLLoader';
 import { FBXLoader } from "FBXLoader";
 import { gsap } from 'gsap';
@@ -15,6 +16,7 @@ class Floor {
     this.objLoader = new OBJLoader();
     this.gltfLoader = new GLTFLoader();
     this.barrier = new THREE.Object3D();
+    this.garden = new THREE.Object3D();
 
     this.setTexture();
     this.setObjects();
@@ -35,6 +37,13 @@ class Floor {
       this.barrier.add(Object.scene);
       this.barrier.scale.set(8, 8, 8);
       this.barrier.position.set(80, 0, 150);
+    });
+
+    this.garden.name = 'garden';
+    this.gltfLoader.load('./images/GLTF/garden/scene.gltf', (Object) => {
+      this.garden.add(Object.scene);
+      this.garden.scale.set(3, 3, 3);
+      this.garden.position.set(0, 50, -30);
     });
   }
 }

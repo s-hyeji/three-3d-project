@@ -81,6 +81,7 @@ class Scene {
   createObject() {
     this.scene.add(this.floor.obj);
     this.scene.add(this.floor.barrier);
+    this.scene.add(this.floor.garden);
     this.scene.add(this.sky.obj);
     this.scene.add(this.sky.cloud);
 
