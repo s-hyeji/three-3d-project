@@ -7,14 +7,12 @@ import { gsap } from 'gsap';
 import Player from './object/Player.js';
 import Floor from './object/backG_Floor.js';
 import Sky from './object/backG_Sky.js';
-import Nature from './object/Nature.js';
 
 class Scene {
   constructor() {
     this.wrap = document.querySelector('#canvasWrap');
     this.floor = Floor;
     this.sky = Sky;
-    this.nature = Nature;
     this.isClick = true;
     this.isCameraAuto = true; // 카메라 자동 애니메이션 제어 플래그 추가
     this.init();
@@ -83,6 +81,8 @@ class Scene {
   createObject() {
     this.scene.add(this.floor.obj);
     this.scene.add(this.sky.obj);
+    this.scene.add(this.sky.cloud);
+    this.scene.add(this.sky.barrier);
 
     const fbxLoader = new FBXLoader();
     const objLoader = new OBJLoader();
@@ -103,21 +103,17 @@ class Scene {
       },
     )
 
-
-
-
-
-    // 경찰서
     let g1_duration = 0.7;
     let g1_delay = 2;
     let g2_delay = 0.3;
 
+    // 경찰서
     fbxLoader.load(
       './images/FBX/police/Police_Station.fbx',
       (Object) => {
-        Object.position.set(160, 1, -50);
+        Object.position.set(150, 1, -10);
         Object.scale.set(0, 0, 0);
-        Object.rotation.y = -Math.PI / 2.5;
+        Object.rotation.y = -Math.PI / 2;
         Object.castShadow = true;
         gsap.to(Object.scale, { x: 0.3, z: 0.3, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
         gsap.to(Object.scale, { y: 0.3, delay: g2_delay }, '<');
@@ -130,10 +126,8 @@ class Scene {
     fbxLoader.load(
       './images/FBX/hospital/Hospital.fbx',
       (Object) => {
-        Object.position.set(-150, -1, 80);
-        // Object.scale.set(2.2, 2.2, 2.2);
+        Object.position.set(-150, -1, 0);
         Object.scale.set(0, 0, 0);
-        Object.rotation.y = 0.5;
         Object.castShadow = true;
         gsap.to(Object.scale, { x: 2.5, z: 2.5, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
         gsap.to(Object.scale, { y: 2.5, delay: g2_delay }, '<');
@@ -141,12 +135,30 @@ class Scene {
       },
     )
 
+
+    // 앰뷸런스
+    objLoader.load('./images/OBJ/ambulance/ambulance.obj', (Object) => {
+      Object.position.set(-100, 3, 50);
+      Object.scale.set(0, 0, 0);
+      Object.rotation.y = -Math.PI / 5;
+      Object.castShadow = true;
+      let ab_map = textureLoader.load('./images/OBJ/ambulance/ambulance.png');
+      ab_map.colorSpace = THREE.SRGBColorSpace;
+      Object.children.forEach((child) => {
+        if (child.isMesh && child.material) child.material.map = ab_map;
+      })
+      gsap.to(Object.scale, { x: 10, z: 10, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+      gsap.to(Object.scale, { y: 10, delay: g2_delay }, '<');
+      this.scene.add(Object);
+    });
+
+
     // 은행
     mtlLoader.load('./images/OBJ/bank/bank.mtl', (mtl) => {
       objLoader.setMaterials(mtl);
       objLoader.load('./images/OBJ/bank/bank.obj', (Object) => {
-        Object.position.set(90, 0, 150);
-        Object.rotation.y = -Math.PI / 1.2;
+        Object.position.set(0, 0, 150);
+        Object.rotation.y = -Math.PI / 1;
         Object.scale.set(0, 0, 0);
         Object.castShadow = true;
         gsap.to(Object.scale, { x: 0.05, z: 0.05, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
@@ -162,9 +174,8 @@ class Scene {
     ]
     schoolMap.forEach((url) => { url.colorSpace = THREE.SRGBColorSpace; });
     objLoader.load('./images/OBJ/school/School.obj', (Object) => {
-      Object.position.set(-40, -4.5, -140);
-      Object.rotation.y = Math.PI + 0.3;
-      // Object.scale.set(0.06, 0.06, 0.06);
+      Object.position.set(10, -4.5, -150);
+      Object.rotation.y = Math.PI;
       Object.scale.set(0, 0, 0);
       Object.castShadow = true;
       Object.children[0].material.map = schoolMap[0];
@@ -174,6 +185,7 @@ class Scene {
       this.scene.add(Object);
     });
 
+
     // ==============================================
   }
 
@@ -182,7 +194,7 @@ class Scene {
     for (let i = 0; i < this.player.mixerArr.length; i++) {
       this.player.mixerArr[i].update(this.clock.getDelta());
     }
-    
+
     // 캐릭터 위치
     this.player.keyEvent();
     let c_moveX = this.player.position().moveX;
@@ -196,6 +208,7 @@ class Scene {
       this.camera.lookAt(c_moveX, 10, c_moveZ);
     }
 
+    this.sky.initAnimation();
     this.renderer.render(this.scene, this.camera);
     // this.pointLight.position.set(10 + c_moveX, 50, 10 + c_moveZ);
     this.orbit.target.set(c_moveX, 10, c_moveZ);

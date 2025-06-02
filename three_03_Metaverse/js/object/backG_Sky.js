@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { OBJLoader } from 'OBJLoader';
+import { GLTFLoader } from 'GLTFLoader';
+import { MTLLoader } from 'MTLLoader';
 import { FBXLoader } from "FBXLoader";
 import { gsap } from 'gsap';
 
@@ -6,11 +9,49 @@ class Sky {
   constructor(material, sphere) {
     this.obj = sphere;
     this.material = material;
+    this.objLoader = new OBJLoader();
+    this.gltfLoader = new GLTFLoader();
+    this.cloud = new THREE.Object3D();
+    this.barrier = new THREE.Object3D();
+
+    this.setTexture();
+    this.setObjects();
   }
 
-  setAction() {
-    const fbxLoader = new FBXLoader();
-    // fbxLoader.load();
+  setTexture() {
+    const skySrc = new THREE.TextureLoader().load('./images/sky/sky_2.png');
+    skySrc.colorSpace = THREE.SRGBColorSpace;
+    this.obj.material.map = skySrc;
+  }
+
+  setObjects() {
+    let count = 30;
+    this.cloud.name = 'cloudGroup';
+    this.cloud.castShadow = true;
+    this.cloud.receiveShadow = true;
+
+    for (let i = 0; i < count; i++) {
+      this.objLoader.load('./images/OBJ/cloud/cloud.obj', (Object) => {
+        Object.position.x = Math.floor(Math.random() * 300) - 150;
+        Object.position.z = Math.floor(Math.random() * 300) - 150;
+        Object.position.y = 100;
+        Object.scale.set(1.5, 1.5, 1.5);
+        this.cloud.add(Object);
+      });
+    }
+
+
+    this.barrier.name = 'barrier';
+    this.gltfLoader.load('./images/GLTF/barrier/scene.gltf', (Object) => {
+      this.barrier.add(Object.scene);
+      this.barrier.scale.set(8, 8, 8);
+      this.barrier.position.set(80, 0, 150);
+    });
+  }
+
+  initAnimation() {
+    this.obj.rotation.y -= 0.002;
+    this.cloud.rotation.y -= 0.001;
   }
 }
 
