@@ -21,7 +21,7 @@ export default class Polygon {
 
       case 'triangle': {
         geometry = new THREE.ConeGeometry(1.8, 3.2, 3);
-        geometry.rotateY(Math.PI / 6);
+        // geometry.rotateY(Math.PI / 6);
         break;
       }
 
