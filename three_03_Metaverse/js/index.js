@@ -21,13 +21,18 @@ class Scene {
   init() {
     // scene 설정
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color("#ddd");
+    this.scene.background = new THREE.Color("#eeeeee");
 
     // camera 설정
     this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 1000);
     this.camera.position.y = 100;
+
     // clock 설정
     this.clock = new THREE.Clock();
+
+    // raycaster 설정
+    this.raycaster = new THREE.Raycaster();
+    this.pointer = new THREE.Vector2();
 
     // Fog 설정
     // let fogNear = 1;
@@ -38,7 +43,7 @@ class Scene {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.wrap.appendChild(this.renderer.domElement);
 
     // lights 설정
@@ -52,12 +57,12 @@ class Scene {
     this.pointLight.position.set(0, 200, 0);
     this.scene.add(this.pointLight);
 
-    this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-    this.directionalLight.position.set(100, 100, -50);
-    this.directionalLight.castShadow = true;
-    this.directionalLight.shadow.mapSize.width = 1024;
-    this.directionalLight.shadow.mapSize.height = 1024;
-    this.scene.add(this.directionalLight);
+    // this.directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    // this.directionalLight.position.set(100, 100, -50);
+    // this.directionalLight.castShadow = true;
+    // this.directionalLight.shadow.mapSize.width = 1024;
+    // this.directionalLight.shadow.mapSize.height = 1024;
+    // this.scene.add(this.directionalLight);
 
     // OrbitControls
     this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
@@ -75,15 +80,25 @@ class Scene {
     this.scene.add(new THREE.AxesHelper(100));
     // this.scene.add(new THREE.GridHelper(100, 20));
     this.scene.add(new THREE.PointLightHelper(this.pointLight));
-    this.scene.add(new THREE.DirectionalLightHelper(this.directionalLight));
+    // this.scene.add(new THREE.DirectionalLightHelper(this.directionalLight));
   }
 
   createObject() {
     this.scene.add(this.floor.obj);
     this.scene.add(this.floor.barrier);
     this.scene.add(this.floor.garden);
+    this.scene.add(this.floor.bigTree);
+    this.scene.add(this.floor.flower_bed_1);
+    this.scene.add(this.floor.flower_bed_2);
+    this.scene.add(this.floor.flower_bed_3);
     this.scene.add(this.sky.obj);
     this.scene.add(this.sky.cloud);
+
+    this.police = new THREE.Object3D();
+    this.hoptial = new THREE.Object3D();
+    this.bank = new THREE.Object3D();
+    this.shcool = new THREE.Object3D();
+
 
     const fbxLoader = new FBXLoader();
     const objLoader = new OBJLoader();
@@ -97,9 +112,9 @@ class Scene {
     }
     fbxLoader.load(
       player_url.standing,
-      (Object) => {
-        this.player = new Player(Object, player_url);
-        this.scene.add(Object);
+      (object) => {
+        this.player = new Player(object, player_url);
+        this.scene.add(object);
         this.requestAnimation();
       },
     )
@@ -111,60 +126,66 @@ class Scene {
     // 경찰서
     fbxLoader.load(
       './images/FBX/police/Police_Station.fbx',
-      (Object) => {
-        Object.position.set(150, 1, -10);
-        Object.scale.set(0, 0, 0);
-        Object.rotation.y = -Math.PI / 2;
-        Object.castShadow = true;
-        gsap.to(Object.scale, { x: 0.3, z: 0.3, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-        gsap.to(Object.scale, { y: 0.3, delay: g2_delay }, '<');
-        Object.traverse((child) => { if (child.isMesh && child.material) child.material.color.set(0xffffff); });
-        this.scene.add(Object);
+      (object) => {
+        this.police = object;
+        this.police.name = 'police';
+        this.police.position.set(150, 1, -10);
+        this.police.scale.set(0, 0, 0);
+        this.police.rotation.y = -Math.PI / 2;
+        this.police.castShadow = true;
+        gsap.to(this.police.scale, { x: 0.3, z: 0.3, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(this.police.scale, { y: 0.3, delay: g2_delay }, '<');
+        this.police.traverse((child) => { if (child.isMesh && child.material) child.material.color.set(0xffffff); });
+        this.scene.add(this.police);
       },
     )
 
     // 병원
     fbxLoader.load(
       './images/FBX/hospital/Hospital.fbx',
-      (Object) => {
-        Object.position.set(-150, -1, 0);
-        Object.scale.set(0, 0, 0);
-        Object.castShadow = true;
-        gsap.to(Object.scale, { x: 2.5, z: 2.5, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-        gsap.to(Object.scale, { y: 2.5, delay: g2_delay }, '<');
-        this.scene.add(Object);
+      (object) => {
+        this.hoptial = object;
+        this.hoptial.name = 'hospital';
+        this.hoptial.position.set(-150, -1, 0);
+        this.hoptial.scale.set(0, 0, 0);
+        this.hoptial.castShadow = true;
+        gsap.to(this.hoptial.scale, { x: 2.5, z: 2.5, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(this.hoptial.scale, { y: 2.5, delay: g2_delay }, '<');
+        this.scene.add(this.hoptial);
       },
     )
 
 
     // 앰뷸런스
-    objLoader.load('./images/OBJ/ambulance/ambulance.obj', (Object) => {
-      Object.position.set(-100, 3, 50);
-      Object.scale.set(0, 0, 0);
-      Object.rotation.y = -Math.PI / 5;
-      Object.castShadow = true;
+    objLoader.load('./images/OBJ/ambulance/ambulance.obj', (object) => {
+      object.position.set(-100, 3, 50);
+      object.scale.set(0, 0, 0);
+      object.rotation.y = -Math.PI / 3;
+      object.castShadow = true;
       let ab_map = textureLoader.load('./images/OBJ/ambulance/ambulance.png');
       ab_map.colorSpace = THREE.SRGBColorSpace;
-      Object.children.forEach((child) => {
+      object.children.forEach((child) => {
         if (child.isMesh && child.material) child.material.map = ab_map;
       })
-      gsap.to(Object.scale, { x: 10, z: 10, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-      gsap.to(Object.scale, { y: 10, delay: g2_delay }, '<');
-      this.scene.add(Object);
+      gsap.to(object.scale, { x: 10, z: 10, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+      gsap.to(object.scale, { y: 10, delay: g2_delay }, '<');
+      this.scene.add(object);
     });
 
 
     // 은행
     mtlLoader.load('./images/OBJ/bank/bank.mtl', (mtl) => {
       objLoader.setMaterials(mtl);
-      objLoader.load('./images/OBJ/bank/bank.obj', (Object) => {
-        Object.position.set(0, 0, 150);
-        Object.rotation.y = -Math.PI / 1;
-        Object.scale.set(0, 0, 0);
-        Object.castShadow = true;
-        gsap.to(Object.scale, { x: 0.05, z: 0.05, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-        gsap.to(Object.scale, { y: 0.05, delay: g2_delay }, '<');
-        this.scene.add(Object);
+      objLoader.load('./images/OBJ/bank/bank.obj', (object) => {
+        this.bank = object;
+        this.bank.name = 'bank';
+        this.bank.position.set(0, 0, 150);
+        this.bank.rotation.y = -Math.PI / 1;
+        this.bank.scale.set(0, 0, 0);
+        this.bank.castShadow = true;
+        gsap.to(this.bank.scale, { x: 0.05, z: 0.05, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(this.bank.scale, { y: 0.05, delay: g2_delay }, '<');
+        this.scene.add(this.bank);
       });
     });
 
@@ -174,16 +195,18 @@ class Scene {
       textureLoader.load('./images/OBJ/school/textures/School-Emissive.png')
     ]
     schoolMap.forEach((url) => { url.colorSpace = THREE.SRGBColorSpace; });
-    objLoader.load('./images/OBJ/school/School.obj', (Object) => {
-      Object.position.set(10, -4.5, -150);
-      Object.rotation.y = Math.PI;
-      Object.scale.set(0, 0, 0);
-      Object.castShadow = true;
-      Object.children[0].material.map = schoolMap[0];
-      Object.children[0].material.emissiveMap = schoolMap[1];
-      gsap.to(Object.scale, { x: 0.07, z: 0.07, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-      gsap.to(Object.scale, { y: 0.07, delay: g2_delay }, '<');
-      this.scene.add(Object);
+    objLoader.load('./images/OBJ/school/School.obj', (object) => {
+      this.shcool = object;
+      this.shcool.name = 'school';
+      this.shcool.position.set(10, -4.5, -150);
+      this.shcool.rotation.y = Math.PI;
+      this.shcool.scale.set(0, 0, 0);
+      this.shcool.castShadow = true;
+      this.shcool.children[0].material.map = schoolMap[0];
+      this.shcool.children[0].material.emissiveMap = schoolMap[1];
+      gsap.to(this.shcool.scale, { x: 0.07, z: 0.07, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+      gsap.to(this.shcool.scale, { y: 0.07, delay: g2_delay }, '<');
+      this.scene.add(this.shcool);
     });
 
 
@@ -210,11 +233,12 @@ class Scene {
     }
 
     this.sky.initAnimation();
+    this.raycaster.setFromCamera(this.pointer, this.camera);
     this.renderer.render(this.scene, this.camera);
-    // this.pointLight.position.set(10 + c_moveX, 50, 10 + c_moveZ);
     this.orbit.target.set(c_moveX, 10, c_moveZ);
     this.orbit.update();
     this.windowResize();
+    
     requestAnimationFrame(() => this.requestAnimation());
   }
 
@@ -225,8 +249,21 @@ class Scene {
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     });
   }
-}
 
+  onClickEvent(event) {
+    if (!this.isClick) return;
+    
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    this.objectList = [this.police, this.hoptial, this.bank, this.shcool];
+    this.intersects = this.raycaster.intersectObjects(this.objectList);
+
+    for (let i = 0; i < this.intersects.length; i++) {
+      new popupQuiz(this.intersects[i].object.parent.name);
+    }
+  }
+}
 
 const scene = new Scene();
 scene.orbit.addEventListener('start', () => { scene.isCameraAuto = false; });
@@ -234,3 +271,99 @@ document.addEventListener('keydown', (e) => {
   let key = ['Enter', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
   if (key.includes(e.code)) scene.isCameraAuto = true;
 });
+
+
+
+
+
+// Quiz
+const quizList = {
+  'bank': {
+    question: '[QUIZ] 은행에서 만들 수 없는 것은?',
+    text: ['지갑', '카드', '통장'],
+    answer: 1,
+  },
+  'hospital': {
+    question: '[QUIZ] 병원에서 근로하지 않는 사람은?',
+    text: ['의사', '간호사', '환자'],
+    answer: 3,
+  },
+  'police': {
+    question: '[QUIZ] 경찰서에서 할 수 없는 것은?',
+    text: ['범죄 신고', '교통사고 신고', '병원 진료'],
+    answer: 3,
+  },
+  'school': {
+    question: '[QUIZ] 학교에서 배울 수 없는 것은?',
+    text: ['수학', '운전', '과학'],
+    answer: 2,
+  },
+}
+
+window.addEventListener('click', (e) => scene.onClickEvent(e));
+
+class popupQuiz {
+  constructor(name) {
+    this.name = name;
+    this.wrap = document.querySelector('#wrap');
+    this.wrap.innerHTML = this.setNode();
+
+    this.popup = this.wrap.querySelector('.popupContainer');
+    this.quizBtn = this.popup.querySelectorAll('.quizList li');
+    this.closeBtn = this.popup.querySelector('.close');
+
+    scene.isClick = false;
+    this.wrap.classList.add('pointerA');
+    setTimeout(() => {
+      this.popup.classList.add('on');
+      this.curAnswer = this.quizBtn[quizList[this.name].answer - 1];
+      this.curAnswer.setAttribute('data-answer', '');
+      this.quizStart();
+    }, 500);
+    
+    this.closeBtn.addEventListener('click', () => { this.closeEvent(); });
+  }
+
+  setNode() {
+    let temp =
+      `<div class="popupContainer">
+        <h2>${quizList[this.name].question}</h2>
+          <ul class="quizList">
+            <li>${quizList[this.name].text[0]}</li>
+            <li>${quizList[this.name].text[1]}</li>
+            <li>${quizList[this.name].text[2]}</li>
+          </ul>
+        <button class="close"></button>
+      </div>`
+    return temp;
+  }
+
+  quizStart() {
+    console.log(this.curAnswer);
+    this.quizBtn.forEach((BTNS) => {
+      BTNS.addEventListener('click', (answerBtn) => {
+        if (answerBtn.target.hasAttribute('data-answer')) this.correctEvent();
+        else this.incorrectEvent();
+      });
+    });
+
+  }
+
+  correctEvent() {
+    this.popup.classList.add('complete');
+    console.log('정답');
+  }
+
+  incorrectEvent() {
+    console.log('오답');
+  }
+
+  closeEvent() {
+    this.wrap.classList.remove('pointerA');
+    this.popup.classList.remove('on');
+    setTimeout(() => {
+      scene.isClick = true;
+      this.wrap.innerHTML = '';
+    }, 1000);
+  }
+}

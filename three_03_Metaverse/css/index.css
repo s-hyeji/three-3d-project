@@ -19,3 +19,124 @@ button {
   height: 100vh;
   overflow: hidden;
 }
+
+
+#wrap {
+  padding: 20px;
+  user-select: none;
+  box-sizing: border-box;
+  overflow: unset;
+  pointer-events: none;
+}
+
+.pointerA {
+  pointer-events: auto !important;
+}
+
+#wrap:has(.popupContainer.on) {
+  pointer-events: auto;
+}
+
+.popupContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: -105%;
+  width: 100%;
+  height: 100%;
+  padding: 50px;
+  box-sizing: border-box;
+  border: 30px solid #279eff;
+  border-radius: 50px;
+  background-color: #fff;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.popupContainer.on {
+  top: 0px;
+}
+
+.popupContainer h2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 40%;
+  font-size: 50px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+
+.popupContainer ul {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  position: relative;
+  width: 100%;
+  height: 60%;
+  font-size: 40px;
+  box-sizing: border-box;
+}
+
+.popupContainer ul li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 80%;
+  padding: 20px 10px;
+  border-radius: 15px;
+  background-color: #279eff;
+  color: #fff;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.popupContainer ul li:hover {
+  background-color: #0a69e6;
+}
+
+
+.popupContainer .close {
+  display: none;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 100%;
+  background-color: #279eff;
+  color: #fff;
+  transition: all 0.3s;
+}
+
+.popupContainer.complete .close {
+  display: block;
+}
+
+.popupContainer .close::before,
+.popupContainer .close::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 70%;
+  height: 6px;
+  border-radius: 10px;
+  background-color: #fff;
+}
+
+.popupContainer .close::after {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.popupContainer .close:hover {
+  rotate: 180deg;
+}

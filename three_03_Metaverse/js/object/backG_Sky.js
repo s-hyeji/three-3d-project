@@ -30,12 +30,12 @@ class Sky {
     this.cloud.receiveShadow = true;
 
     for (let i = 0; i < count; i++) {
-      this.objLoader.load('./images/OBJ/cloud/cloud.obj', (Object) => {
-        Object.position.x = Math.floor(Math.random() * 300) - 150;
-        Object.position.z = Math.floor(Math.random() * 300) - 150;
-        Object.position.y = 100;
-        Object.scale.set(1.5, 1.5, 1.5);
-        this.cloud.add(Object);
+      this.objLoader.load('./images/OBJ/cloud/cloud.obj', (object) => {
+        object.position.x = Math.floor(Math.random() * 300) - 150;
+        object.position.z = Math.floor(Math.random() * 300) - 150;
+        object.position.y = 100;
+        object.scale.set(1.5, 1.5, 1.5);
+        this.cloud.add(object);
       });
     }
   }
