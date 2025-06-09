@@ -14,7 +14,8 @@ class Scene {
     this.floor = Floor;
     this.sky = Sky;
     this.isClick = true;
-    this.isCameraAuto = true; // 카메라 자동 애니메이션 제어 플래그 추가
+    this.isCameraAuto = true;
+    this.isOrbiting = false;
     this.init();
   }
 
@@ -33,6 +34,11 @@ class Scene {
     // raycaster 설정
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+
+
+
+
 
     // Fog 설정
     // let fogNear = 1;
@@ -96,9 +102,9 @@ class Scene {
     this.scene.add(this.sky.cloud);
 
     this.police = new THREE.Object3D();
-    this.hoptial = new THREE.Object3D();
+    this.hospital = new THREE.Object3D();
     this.bank = new THREE.Object3D();
-    this.shcool = new THREE.Object3D();
+    this.school = new THREE.Object3D();
 
 
     const fbxLoader = new FBXLoader();
@@ -145,14 +151,17 @@ class Scene {
     fbxLoader.load(
       './images/FBX/hospital/Hospital.fbx',
       (object) => {
-        this.hoptial = object;
-        this.hoptial.name = 'hospital';
-        this.hoptial.position.set(-150, -1, 0);
-        this.hoptial.scale.set(0, 0, 0);
-        this.hoptial.castShadow = true;
-        gsap.to(this.hoptial.scale, { x: 2.5, z: 2.5, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-        gsap.to(this.hoptial.scale, { y: 2.5, delay: g2_delay }, '<');
-        this.scene.add(this.hoptial);
+        this.hospital = object;
+        this.hospital.traverse((child) => {
+          if (child.isMesh) if (child.ID === 1948824982320 || child.ID === 1948825079216) child.scale.set(0, 0, 0);
+        });
+        this.hospital.name = 'hospital';
+        this.hospital.position.set(-150, 0, 0);
+        this.hospital.scale.set(0, 0, 0);
+        this.hospital.castShadow = true;
+        gsap.to(this.hospital.scale, { x: 2.5, z: 2.5, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+        gsap.to(this.hospital.scale, { y: 2.5, delay: g2_delay }, '<');
+        this.scene.add(this.hospital);
       },
     )
 
@@ -179,19 +188,18 @@ class Scene {
     ]
     schoolMap.forEach((url) => { url.colorSpace = THREE.SRGBColorSpace; });
     objLoader.load('./images/OBJ/school/School.obj', (object) => {
-      this.shcool = object;
-      this.shcool.name = 'school';
-      this.shcool.position.set(10, -4.5, -150);
-      this.shcool.rotation.y = Math.PI;
-      this.shcool.scale.set(0, 0, 0);
-      this.shcool.castShadow = true;
-      this.shcool.children[0].material.map = schoolMap[0];
-      this.shcool.children[0].material.emissiveMap = schoolMap[1];
-      gsap.to(this.shcool.scale, { x: 0.07, z: 0.07, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-      gsap.to(this.shcool.scale, { y: 0.07, delay: g2_delay }, '<');
-      this.scene.add(this.shcool);
+      this.school = object;
+      this.school.name = 'school';
+      this.school.position.set(10, -4.5, -150);
+      this.school.rotation.y = Math.PI;
+      this.school.scale.set(0, 0, 0);
+      this.school.castShadow = true;
+      this.school.children[0].material.map = schoolMap[0];
+      this.school.children[0].material.emissiveMap = schoolMap[1];
+      gsap.to(this.school.scale, { x: 0.07, z: 0.07, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+      gsap.to(this.school.scale, { y: 0.07, delay: g2_delay }, '<');
+      this.scene.add(this.school);
     });
-
 
     // ==============================================
   }
@@ -233,23 +241,47 @@ class Scene {
     });
   }
 
+  onMouseMove(event) {
+    if (this.isOrbiting) return;
+    this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
+
+    this.objectList = [this.police, this.hospital, this.bank, this.school];
+    this.intersects = this.raycaster.intersectObjects(this.objectList);
+
+    if (this.intersects.length > 0) {
+      this.isClick = true;
+      this.wrap.style.cursor = 'pointer';
+    } else {
+      this.isClick = false;
+      this.wrap.style.cursor = 'default';
+    }
+  }
+
   onClickEvent(event) {
     if (!this.isClick) return;
 
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
-    this.objectList = [this.police, this.hoptial, this.bank, this.shcool];
+    this.objectList = [this.police, this.hospital, this.bank, this.school];
     this.intersects = this.raycaster.intersectObjects(this.objectList);
+    // this.raycaster.setFromCamera(this.pointer, this.camera);
+    // this.objectList = [this.police, this.hospital, this.bank, this.school];
+    // this.intersects = this.raycaster.intersectObjects(this.objectList);
 
-    for (let i = 0; i < this.intersects.length; i++) {
-      new popupQuiz(this.intersects[i].object.parent.name);
-    }
+    if (this.intersects.length > 0) new popupQuiz(this.intersects[0].object.parent.name);
   }
 }
 
 const scene = new Scene();
-scene.orbit.addEventListener('start', () => { scene.isCameraAuto = false; });
+scene.orbit.addEventListener('start', () => {
+  scene.isCameraAuto = false;
+  scene.isOrbiting = true;
+  scene.wrap.style.cursor = 'default';
+});
+scene.orbit.addEventListener('end', () => { scene.isOrbiting = false; });
+
 document.addEventListener('keydown', (e) => {
   let key = ['Enter', 'Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
   if (key.includes(e.code)) scene.isCameraAuto = true;
@@ -283,8 +315,8 @@ const quizList = {
   },
 }
 
-// window.addEventListener('click', (e) => scene.onClickEvent(e));
-window.addEventListener('mousedown', (e) => scene.onClickEvent(e));
+window.addEventListener('pointermove', (e) => scene.onMouseMove(e));
+window.addEventListener('dblclick', (e) => scene.onClickEvent(e));
 
 class popupQuiz {
   constructor(name) {
@@ -346,6 +378,8 @@ class popupQuiz {
   closeEvent() {
     this.wrap.classList.remove('pointerA');
     this.popup.classList.remove('on');
+    scene.intersects = [];
+
     setTimeout(() => {
       scene.isClick = true;
       this.wrap.innerHTML = '';
