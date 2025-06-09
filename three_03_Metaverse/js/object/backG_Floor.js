@@ -18,6 +18,7 @@ class Floor {
     this.barrier = new THREE.Object3D();
     this.garden = new THREE.Object3D();
     this.bigTree = new THREE.Object3D();
+    this.ambulance = new THREE.Object3D();
     this.flower_bed_1 = new THREE.Object3D();
     this.flower_bed_2 = new THREE.Object3D();
     this.flower_bed_3 = new THREE.Object3D();
@@ -28,22 +29,23 @@ class Floor {
   }
 
   setTexture() {
-    const textureLoader = new THREE.TextureLoader()
+    this.textureLoader = new THREE.TextureLoader()
     const texturesSrc = [
-      textureLoader.load('./images/floor/floor.png'),
-      textureLoader.load('./images/GLTF/mango_tree/textures/Material.001_baseColor.png'),
-      textureLoader.load('./images/GLTF/mango_tree/textures/Material.002_baseColor.png'),
-      textureLoader.load('./images/GLTF/mango_tree/textures/Material.002_normal.png'),
-      textureLoader.load('./images/GLTF/mango_tree/textures/Material.004_baseColor.png'),
+      this.textureLoader.load('./images/floor/floor.png'),
+      this.textureLoader.load('./images/GLTF/mango_tree/textures/Material.001_baseColor.png'),
+      this.textureLoader.load('./images/GLTF/mango_tree/textures/Material.002_baseColor.png'),
+      this.textureLoader.load('./images/GLTF/mango_tree/textures/Material.002_normal.png'),
+      this.textureLoader.load('./images/GLTF/mango_tree/textures/Material.004_baseColor.png'),
     ]
     texturesSrc.forEach((url) => { url.colorSpace = THREE.SRGBColorSpace; });
     this.material.map = texturesSrc[0];
-    // this.material.map.wrapS = THREE.RepeatWrapping;
-    // this.material.map.wrapT = THREE.RepeatWrapping;
-    // this.material.map.repeat.set(2.5, 2.5);
   }
 
   setObjects() {
+    let g1_duration = 0.7;
+    let g1_delay = 2;
+    let g2_delay = 0.3;
+
     this.barrier.name = 'barrier';
     this.gltfLoader.load('./images/GLTF/barrier/scene.gltf', (object) => {
       this.barrier.add(object.scene);
@@ -73,6 +75,21 @@ class Floor {
           child.renderOrder = 1;
         }
       });
+    });
+
+    this.objLoader.load('./images/OBJ/ambulance/ambulance.obj', (object) => {
+      this.ambulance.add(object);
+      this.ambulance.position.set(-100, 3, 50);
+      this.ambulance.scale.set(0, 0, 0);
+      this.ambulance.rotation.y = -Math.PI / 3;
+      this.ambulance.castShadow = true;
+      let ab_map = this.textureLoader.load('./images/OBJ/ambulance/ambulance.png');
+      ab_map.colorSpace = THREE.SRGBColorSpace;
+      object.children.forEach((child) => {
+        if (child.isMesh && child.material) child.material.map = ab_map;
+      })
+      gsap.to(this.ambulance.scale, { x: 10, z: 10, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
+      gsap.to(this.ambulance.scale, { y: 10, delay: g2_delay }, '<');
     });
 
     this.flower_bed_1.name = 'flower_bed_1';

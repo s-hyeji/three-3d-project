@@ -69,11 +69,11 @@ class Scene {
     this.orbit.enableDamping = true;
     this.orbit.rotateSpeed = 0.5;
     this.orbit.minDistance = 10;
-    // this.orbit.maxDistance = 70;
+    this.orbit.maxDistance = 150;
     this.orbit.maxPolarAngle = Math.PI / 2;
 
     this.createObject();
-    this.initHelper();
+    // this.initHelper();
   }
 
   initHelper() {
@@ -88,6 +88,7 @@ class Scene {
     this.scene.add(this.floor.barrier);
     this.scene.add(this.floor.garden);
     this.scene.add(this.floor.bigTree);
+    this.scene.add(this.floor.ambulance);
     this.scene.add(this.floor.flower_bed_1);
     this.scene.add(this.floor.flower_bed_2);
     this.scene.add(this.floor.flower_bed_3);
@@ -155,24 +156,6 @@ class Scene {
       },
     )
 
-
-    // 앰뷸런스
-    objLoader.load('./images/OBJ/ambulance/ambulance.obj', (object) => {
-      object.position.set(-100, 3, 50);
-      object.scale.set(0, 0, 0);
-      object.rotation.y = -Math.PI / 3;
-      object.castShadow = true;
-      let ab_map = textureLoader.load('./images/OBJ/ambulance/ambulance.png');
-      ab_map.colorSpace = THREE.SRGBColorSpace;
-      object.children.forEach((child) => {
-        if (child.isMesh && child.material) child.material.map = ab_map;
-      })
-      gsap.to(object.scale, { x: 10, z: 10, duration: g1_duration, ease: 'power2.inOut' }, `+${g1_delay}`);
-      gsap.to(object.scale, { y: 10, delay: g2_delay }, '<');
-      this.scene.add(object);
-    });
-
-
     // 은행
     mtlLoader.load('./images/OBJ/bank/bank.mtl', (mtl) => {
       objLoader.setMaterials(mtl);
@@ -238,7 +221,7 @@ class Scene {
     this.orbit.target.set(c_moveX, 10, c_moveZ);
     this.orbit.update();
     this.windowResize();
-    
+
     requestAnimationFrame(() => this.requestAnimation());
   }
 
@@ -252,7 +235,7 @@ class Scene {
 
   onClickEvent(event) {
     if (!this.isClick) return;
-    
+
     this.pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.pointer.y = - (event.clientY / window.innerHeight) * 2 + 1;
 
@@ -300,7 +283,8 @@ const quizList = {
   },
 }
 
-window.addEventListener('click', (e) => scene.onClickEvent(e));
+// window.addEventListener('click', (e) => scene.onClickEvent(e));
+window.addEventListener('mousedown', (e) => scene.onClickEvent(e));
 
 class popupQuiz {
   constructor(name) {
@@ -311,6 +295,7 @@ class popupQuiz {
     this.popup = this.wrap.querySelector('.popupContainer');
     this.quizBtn = this.popup.querySelectorAll('.quizList li');
     this.closeBtn = this.popup.querySelector('.close');
+    this.audio = new Audio();
 
     scene.isClick = false;
     this.wrap.classList.add('pointerA');
@@ -320,13 +305,13 @@ class popupQuiz {
       this.curAnswer.setAttribute('data-answer', '');
       this.quizStart();
     }, 500);
-    
+
     this.closeBtn.addEventListener('click', () => { this.closeEvent(); });
   }
 
   setNode() {
-    let temp =
-      `<div class="popupContainer">
+    let temp = `
+      <div class="popupContainer">
         <h2>${quizList[this.name].question}</h2>
           <ul class="quizList">
             <li>${quizList[this.name].text[0]}</li>
@@ -334,28 +319,28 @@ class popupQuiz {
             <li>${quizList[this.name].text[2]}</li>
           </ul>
         <button class="close"></button>
-      </div>`
+      </div>
+      `;
     return temp;
   }
 
   quizStart() {
-    console.log(this.curAnswer);
     this.quizBtn.forEach((BTNS) => {
-      BTNS.addEventListener('click', (answerBtn) => {
-        if (answerBtn.target.hasAttribute('data-answer')) this.correctEvent();
+      BTNS.addEventListener('click', (quizBtn) => {
+        if (quizBtn.target.hasAttribute('data-answer')) this.correctEvent();
         else this.incorrectEvent();
+        this.audio.play();
       });
     });
-
   }
 
   correctEvent() {
     this.popup.classList.add('complete');
-    console.log('정답');
+    this.audio.src = './media/correct.mp3';
   }
 
   incorrectEvent() {
-    console.log('오답');
+    this.audio.src = './media/incorrect.mp3';
   }
 
   closeEvent() {

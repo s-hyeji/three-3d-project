@@ -59,6 +59,9 @@ button {
   top: 0px;
 }
 
+.popupContainer.complete ul{pointer-events: none;}
+.popupContainer.complete [data-answer] {background-color: #ff4b99;}
+
 .popupContainer h2 {
   display: flex;
   align-items: center;
