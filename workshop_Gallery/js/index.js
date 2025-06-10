@@ -45,6 +45,7 @@ export class GalleryApp {
   initRenderer() {
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
     this.renderer.setSize(this.clientWidth, this.clientHeight);
+    this.renderer.shadowMap.enabled = true;
     this.container.appendChild(this.renderer.domElement);
   }
 
@@ -88,6 +89,7 @@ export class GalleryApp {
     const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
     wallMesh.position.set(wallWidth / 2 - this.distance, 0, -1.5);
     wallMesh.receiveShadow = true;
+
     this.galleryGroup.add(wallMesh);
 
     const wallLight = new THREE.DirectionalLight(0xffffff, 0.5);
