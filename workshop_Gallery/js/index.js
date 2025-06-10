@@ -1,198 +1,350 @@
 import * as THREE from 'three';
 import { OrbitControls } from "OrbitControls";
+import gsap from 'gsap';
 
 
-const wrap = document.querySelector('#wrap');
-const { clientWidth, clientHeight } = wrap;
+export class GalleryApp {
+  constructor(imageList) {
+    this.container = document.querySelector('#wrap');
+    this.imageList = imageList;
+    this.zoom = document.querySelector(".zoomIcon");
+    this.home = document.querySelector(".goHome");
+    this.clientWidth = this.container.clientWidth;
+    this.clientHeight = this.container.clientHeight;
+    this.distance = 400;
+    this.pageNum = 0;
+    this.targetNum = 0;
+    this.moveX = 0;
 
-const distance = 400;
+    this.isZoomeHover = true;
+    this.isDragging = false;
+    this.startDrag = { x: 0, y: 0 };
 
-let scene, camera, renderer, controls;
-let galleryGroup = new THREE.Group();
-let pageNum = 0;
-let targetNum = 0;
-let moveX = 0;
-const imageList = [
-  'images/2015.jpg',
-  'images/2016-1.jpg',
-  'images/2016-2.jpg',
-  'images/2018.jpg',
-  'images/2019.jpg',
-  'images/2024.jpg',
-  'images/2025.jpg',
-  // 'images/unit-5.png',
-  // 'images/unit-5.png',
-  // 'images/unit-5.png',
-  // 'images/unit-5.png',
-  // 'images/unit-5.png',
-];
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color("#000000");
 
-const init = () => {
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color("#000000"); //배경 컬러
-  camera = new THREE.PerspectiveCamera(75, clientWidth / clientHeight, 0.1, 1000);
-  camera.position.set(0, 0, 150);
+    this.galleryGroup = new THREE.Group();
+    this.clickableBoxes = [];
+    this.mouse = new THREE.Vector2();
+    this.raycaster = new THREE.Raycaster();
 
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(clientWidth, clientHeight);
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFShadowMap; //PCFShadowMap
-  //그림자 활성화
+    this.prevBtn = document.querySelector('.btn-prev');
+    this.nextBtn = document.querySelector('.btn-next');
+    this.btns = document.querySelectorAll('[class*="btn-"]');
 
-  wrap.appendChild(renderer.domElement);
+    this.initRenderer();
+    this.initCamera();
+    // this.initControls();
+    this.initScene();
+    this.addBoxes();
+    this.addEvents();
+    this.animate = this.animate.bind(this);
+    this.animate();
+  }
 
-  // const axes = new THREE.AxesHelper(150);
-  // scene.add(axes);
+  initRenderer() {
+    this.renderer = new THREE.WebGLRenderer({ antialias: true });
+    this.renderer.setSize(this.clientWidth, this.clientHeight);
+    this.container.appendChild(this.renderer.domElement);
+  }
 
-  // const gridHelper = new THREE.GridHelper(240, 20);
-  // scene.add(gridHelper);
+  initCamera() {
+    this.camera = new THREE.PerspectiveCamera(
+      75,
+      this.clientWidth / this.clientHeight,
+      0.1,
+      1000
+    );
+    this.camera.position.set(0, 0, 150);
+  }
 
-  //조명 넣기
-  var light = new THREE.HemisphereLight(0xffffff, 0x080820, 0.2);
-  light.position.set(0, 50, 50);
-  scene.add(light);
-
-  controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableRotate = false;
-  controls.enablePan = false;
-  controls.enableZoom = true;
-  controls.minDistance = 10;
-  controls.maxDistance = 150;
-  {
-    //가벽 만들기
-    const loader = new THREE.TextureLoader();
-
-    const baseColor = loader.load('mesh/Marble021_1K-PNG_Color.png');
-    const roughness = loader.load('mesh/Marble021_1K-PNG_Roughness.png');
-    const normalMap = loader.load('mesh/Marble021_1K-PNG_NormalGL.png');
-    const displacement = loader.load('mesh/Marble021_1K-PNG_Displacement.png');
+  // initControls() {
+  //   this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+  //   this.controls.enableRotate = false;
+  //   this.controls.enableZoom = false;
+  // }
 
 
-    [baseColor, roughness, normalMap, displacement].forEach(tex => {
-      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-      tex.repeat.set(30, 4);
-      tex.colorSpace = THREE.SRGBColorSpace;
-    });
+  initScene() {
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x080820, 0.2);
+    hemi.position.set(0, 50, 50);
+    this.scene.add(hemi);
 
-    const wallWidth = distance * imageList.length + distance;
-    const geometry = new THREE.BoxGeometry(wallWidth, 300, 2);
-    const material = new THREE.MeshStandardMaterial({
-      map: baseColor,
-      normalMap: normalMap,
-      roughnessMap: roughness,
+    const wallTexture = new THREE.TextureLoader().load('mesh/Marble021_1K-PNG_Color.png');
+    wallTexture.wrapS = wallTexture.wrapT = THREE.RepeatWrapping;
+    wallTexture.repeat.set(30, 4);
+    wallTexture.colorSpace = THREE.SRGBColorSpace;
+
+    const wallWidth = this.distance * this.imageList.length + this.distance;
+    const wallGeometry = new THREE.BoxGeometry(wallWidth, 300, 2);
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      map: wallTexture,
       roughness: 0.1,
       metalness: 0.1,
-      reflectivity: 0.5,
       clearcoat: 0.7,
-      clearcoatRoughness: 0.05,
+      clearcoatRoughness: 0.05
     });
 
-    const wallMesh = new THREE.Mesh(geometry, material);
-    wallMesh.position.set(wallWidth / 2 - distance, 0, -1.5);
+    const wallMesh = new THREE.Mesh(wallGeometry, wallMaterial);
+    wallMesh.position.set(wallWidth / 2 - this.distance, 0, -1.5);
     wallMesh.receiveShadow = true;
-    galleryGroup.add(wallMesh);
-    scene.add(galleryGroup);
+    this.galleryGroup.add(wallMesh);
 
-    const wallLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    const wallLight = new THREE.DirectionalLight(0xffffff, 0.5);
     wallLight.position.set(0, 60, 50);
     wallLight.castShadow = false;
-    scene.add(wallLight);
+    this.scene.add(wallLight);
+
+    this.scene.add(this.galleryGroup);
   }
-  for (let i = 0; i < imageList.length; i++) {
-    addBox(i);
-  }
-};
 
-//액자 추가
-const addBox = (i) => {
-  const texture = new THREE.TextureLoader().load(
-    imageList[i],
-    (loadedTexture) => {
-      loadedTexture.colorSpace = THREE.SRGBColorSpace;
-    }
-  );
+  addBoxes() {
+    for (let i = 0; i < this.imageList.length; i++) {
+      const texture = new THREE.TextureLoader().load(
+        imageList[i].src,
+        (loadedTexture) => {
+          loadedTexture.colorSpace = THREE.SRGBColorSpace;
+        }
+      );
 
-  const baseWidth = 200;
-  const aspectRatio = 16 / 9;
-  const baseHeight = baseWidth / aspectRatio;
+      const baseWidth = 200;
+      const baseHeight = baseWidth / (16 / 9);
+      const geometry = new THREE.BoxGeometry(baseWidth, baseHeight, 2);
+      const material = new THREE.MeshPhongMaterial({ map: texture });
 
-  const geometry = new THREE.BoxGeometry(baseWidth, baseHeight, 2);
-  const material = new THREE.MeshPhongMaterial({
-    map: texture,
-  });
-  const boxMesh = new THREE.Mesh(geometry, material);
-  boxMesh.castShadow = true;
-  boxMesh.receiveShadow = true;
-  const x = i * distance;
-  const y = 0;
-  const z = 0;
-  boxMesh.position.set(x, y, 0.2);
-  galleryGroup.add(boxMesh);
+      const boxMesh = new THREE.Mesh(geometry, material);
+      boxMesh.position.set(i * this.distance, 0, 0.2);
+      boxMesh.castShadow = true;
+      boxMesh.receiveShadow = true;
+      this.galleryGroup.add(boxMesh);
+      this.clickableBoxes.push(boxMesh);
 
-  const frameThickness = 5;
-  const frameGeometry = new THREE.BoxGeometry(
-    baseWidth + frameThickness,
-    baseHeight + frameThickness,
-    2.2
-  );
-  const frameMaterial = new THREE.MeshStandardMaterial({
-    color: 0x222222,
-    roughness: 0.6,
-    metalness: 0.2,
-  });
-  const frameMesh = new THREE.Mesh(frameGeometry, frameMaterial);
-  frameMesh.position.set(x, y, z - 0.05);
-  frameMesh.castShadow = true;
-  frameMesh.receiveShadow = true;
-  galleryGroup.add(frameMesh);
+      const frameGeo = new THREE.BoxGeometry(baseWidth + 5, baseHeight + 5, 2.2);
+      const frameMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+      const frame = new THREE.Mesh(frameGeo, frameMat);
+      frame.position.set(i * this.distance, 0, 0);
+      frame.castShadow = frame.receiveShadow = true;
+      this.galleryGroup.add(frame);
 
+      const light = new THREE.SpotLight(0xffffff, 400);
+      light.position.set(i * this.distance, 110, 200);
+      light.target = boxMesh;
+      light.angle = Math.PI / 6;
+      light.distance = 500;
+      light.decay = 1;
+      light.penumbra = 0.1;
+      light.castShadow = true;
 
-  const spotLight = new THREE.SpotLight(0xffffff, 180);
-  spotLight.position.set(x, 110, 200);
-  spotLight.angle = Math.PI / 6;
-  spotLight.penumbra = 0.1;
-  spotLight.decay = 1;
-  spotLight.distance = 500;
-  spotLight.target = boxMesh;
-  spotLight.castShadow = true;
-
-  galleryGroup.add(spotLight);
-  galleryGroup.add(spotLight.target);
-
-  // const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-  // scene.add(spotLightHelper);
-};
-
-const animate = () => {
-  // controls.update();
-
-  moveX += (targetNum - moveX) * 0.05;
-  galleryGroup.position.x = moveX;
-  camera.lookAt(scene.position);
-  camera.updateProjectionMatrix();
-  renderer.render(scene, camera);
-  requestAnimationFrame(animate);
-};
-
-
-const clickFunc = (event) => {
-  // console.log(event.pageX);
-  if (event.pageX < clientWidth / 2) {
-    // console.log("좌");
-    if (pageNum > 0) {
-      pageNum -= 1;
-    }
-  } else {
-    // console.log("우");
-    if (pageNum < imageList.length - 1) {
-      pageNum += 1;
+      this.galleryGroup.add(light);
+      this.galleryGroup.add(light.target);
     }
   }
-  // console.log("pageNum :" + pageNum);
-  targetNum = -(pageNum * distance);
-};
+  getIntersectsFromEvent(e) {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    return this.raycaster.intersectObjects(this.clickableBoxes);
+  }
+  worldToScreenPosition(obj, camera, renderer) {
+    const vector = new THREE.Vector3();
+    obj.getWorldPosition(vector);
+    vector.project(camera);
 
+    const widthHalf = 0.5 * renderer.domElement.clientWidth;
+    const heightHalf = 0.5 * renderer.domElement.clientHeight;
 
-init();
-animate();
-document.addEventListener("click", clickFunc);
+    return {
+      x: (vector.x * widthHalf) + widthHalf,
+      y: -(vector.y * heightHalf) + heightHalf
+    };
+  }
+  addEvents() {
+    this.zoom.addEventListener("click", this.zoomClick.bind(this));
+    this.home.addEventListener("click", this.homeClick.bind(this));
+    this.renderer.domElement.addEventListener('mousemove', this.handleHover.bind(this));
+
+    this.btns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (btn === this.prevBtn && this.pageNum > 0) this.pageNum--;
+        else if (btn === this.nextBtn && this.pageNum < this.imageList.length - 1) this.pageNum++;
+
+        this.targetNum = -(this.pageNum * this.distance);
+        this.prevBtn.classList.toggle('off', this.pageNum <= 0);
+        this.nextBtn.classList.toggle('off', this.pageNum >= this.imageList.length - 1);
+
+        this.isZoomeHover = false;
+
+        setTimeout(() => { this.isZoomeHover = true; }, 1850);
+      });
+    });
+  }
+
+  handleHover(e) {
+    if (!this.isZoomeHover) return;
+
+    const intersects = this.getIntersectsFromEvent(e);
+    if (intersects.length > 0) {
+      const mesh = intersects[0].object;
+      mesh.geometry.computeBoundingBox();
+
+      const bbox = mesh.geometry.boundingBox;
+      const corner = new THREE.Vector3(bbox.max.x, bbox.min.y, 0);
+      corner.applyMatrix4(mesh.matrixWorld);
+
+      const screenCorner = corner.clone().project(this.camera);
+      const halfW = 0.5 * this.renderer.domElement.clientWidth;
+      const halfH = 0.5 * this.renderer.domElement.clientHeight;
+
+      const screenX = (screenCorner.x * halfW) + halfW;
+      const screenY = -(screenCorner.y * halfH) + halfH;
+
+      this.zoom.style.left = `${screenX - 45}px`;
+      this.zoom.style.top = `${screenY - 45}px`;
+      this.zoom.style.opacity = '1';
+    } else {
+      this.zoom.style.opacity = '0';
+
+    }
+  }
+
+  zoomClick(e) {
+    this.isZoomeHover = false;
+    this.zoom.style.display = 'none';
+    this.btns.forEach(e => e.classList.add("off"));
+    this.home.style.display = "flex"
+
+    const intersects = this.getIntersectsFromEvent(e);
+    if (intersects.length > 0) {
+      const mesh = intersects[0].object;
+
+      const targetPos = new THREE.Vector3();
+      mesh.getWorldPosition(targetPos);
+
+      const camTarget = targetPos.clone().add(new THREE.Vector3(0, 0, 80));
+
+      gsap.to(this.camera.position, {
+        x: camTarget.x,
+        y: camTarget.y,
+        z: camTarget.z,
+        duration: 1.2,
+        ease: 'power3.out',
+        onUpdate: () => {
+          this.camera.lookAt(targetPos);
+        },
+        onComplete: () => {
+          this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+          this.controls.enableRotate = false;
+          // this.controls.enableRotate = true;
+          this.controls.minDistance = 20;
+          this.controls.maxDistance = 80;
+          this.controls.enablePan = true;
+          this.controls.target.copy(targetPos);
+          this.controls.update();
+
+          const dom = this.renderer.domElement;
+
+          dom.addEventListener('mousedown', (e) => {
+            this.isDragging = true;
+            this.startDrag.x = e.clientX;
+            this.startDrag.y = e.clientY;
+          });
+
+          dom.addEventListener('mousemove', (e) => {
+            if (!this.isDragging || !this.controls) return;
+
+            const deltaX = e.clientX - this.startDrag.x;
+            const deltaY = e.clientY - this.startDrag.y;
+
+            const speed = 0.08;
+
+            this.controls.target.x -= deltaX * speed;
+            this.controls.target.y += deltaY * speed;
+
+            this.camera.position.x -= deltaX * speed;
+            this.camera.position.y += deltaY * speed;
+
+            this.startDrag.x = e.clientX;
+            this.startDrag.y = e.clientY;
+          });
+
+          dom.addEventListener('mouseup', () => {
+            this.isDragging = false;
+          });
+          dom.addEventListener('mouseleave', () => {
+            this.isDragging = false;
+          });
+        }
+      });
+    }
+  }
+  homeClick(e) {
+    this.isDragging = false;
+    this.controls.dispose();
+    this.controls = null;
+    this.camera.position.x = this.camera.position.y = 0;
+    this.controls?.target.set(0, 0, 0);
+    gsap.to(this.camera.position, {
+      x: 0,
+      y: 0,
+      z: 150,
+      duration: 1.2,
+      ease: 'power3.out',
+      onUpdate: () => {
+        this.camera.lookAt(this.scene.position);
+        this.home.style.display = "none"
+      },
+      onComplete: () => {
+        this.btns.forEach(e => e.classList.remove("off"));
+        this.prevBtn.classList.toggle('off', this.pageNum <= 0);
+        this.nextBtn.classList.toggle('off', this.pageNum >= this.imageList.length - 1);
+
+        this.isZoomeHover = true;
+        this.zoom.style.display = 'block';
+        this.zoom.style.opacity = '0';
+      }
+    });
+    gsap.to(this.camera.position, {
+      x: 0,
+      y: 0,
+      z: 150,
+      duration: 1.2,
+      ease: 'power3.out',
+      onUpdate: () => {
+        this.camera.lookAt(this.scene.position);
+        this.home.style.display = "none"
+      },
+      onComplete: () => {
+        this.btns.forEach(e => e.classList.remove("off"));
+        this.prevBtn.classList.toggle('off', this.pageNum <= 0);
+        this.nextBtn.classList.toggle('off', this.pageNum >= this.imageList.length - 1);
+
+        this.isZoomeHover = true;
+        this.zoom.style.display = 'block';
+        this.zoom.style.opacity = '0';
+      }
+    });
+  }
+
+  animate() {
+    this.moveX += (this.targetNum - this.moveX) * 0.05;
+    this.galleryGroup.position.x = this.moveX;
+
+    if (this.controls) {
+      // this.moveCamera();
+      this.camera.lookAt(this.controls.target);
+    } else {
+      this.camera.lookAt(this.scene.position);
+    }
+
+    // this.camera.updateProjectionMatrix();
+    this.renderer.render(this.scene, this.camera);
+    requestAnimationFrame(this.animate);
+  }
+}
+
+const imageList = Array.from(document.querySelectorAll('#image-list li')).map(el => ({
+  src: el.dataset.src,
+  text: el.dataset.text
+}));
+const app = new GalleryApp(imageList);

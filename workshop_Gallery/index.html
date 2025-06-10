@@ -6,11 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workshop Gallery</title>
   <link rel="stylesheet" href="../common/common.css">
-  <style>
-    #wrap {
-      padding: 0;
-    }
-  </style>
+  <link rel="stylesheet" href="./css/index.css">
   <script type="importmap">
       {
         "imports": {
@@ -23,10 +19,28 @@
 </head>
 
 <body>
-  <div id="wrap"></div>
+  <div id="wrap">
+    <div class="btn-prev off"></div>
+    <div class="btn-next"></div>
+    <div class="zoomIcon"></div>
+    <div class="goHome"></div>
+
+    <ul id="image-list">
+      <!-- <li data-src="images/unit-5.png" data-text="2018년 워크샵"></li>
+      <li data-src="images/unit-5.png" data-text="2018년 워크샵"></li>
+      <li data-src="images/unit-5.png" data-text="2018년 워크샵"></li>
+      <li data-src="images/unit-5.png" data-text="2018년 워크샵"></li> -->
+      <li data-src="images/2015.jpg" data-text="2015년 워크샵 - 대부도"></li>
+      <li data-src="images/2016-1.jpg" data-text="2016년 동계 워크샵"></li>
+      <li data-src="images/2016-2.jpg" data-text="2016년 하계계 워크샵"></li>
+      <li data-src="images/2018.jpg" data-text="2018년 워크샵"></li>
+      <li data-src="images/2019.jpg" data-text="2019년 워크샵"></li>
+      <li data-src="images/2024.jpg" data-text="2024년 워크샵"></li>
+      <li data-src="images/2025.jpg" data-text="2025년 신년회"></li>
+    </ul>
+  </div>
   <script type="text/javascript" src="../common/scale.js"></script>
-  <script src="./js/index.js" type="module"> </script>
-  </script>
+  <script src="./js/index.js" type="module"></script>
 </body>
 
 </html>
