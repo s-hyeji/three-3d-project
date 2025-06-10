@@ -5,7 +5,7 @@ import { OrbitControls } from "OrbitControls";
 const wrap = document.querySelector('#wrap');
 const { clientWidth, clientHeight } = wrap;
 
-const distance = 150;
+const distance = 400;
 
 let scene, camera, renderer, controls;
 let galleryGroup = new THREE.Group();
@@ -31,7 +31,7 @@ const init = () => {
   scene = new THREE.Scene();
   scene.background = new THREE.Color("#000000"); //배경 컬러
   camera = new THREE.PerspectiveCamera(75, clientWidth / clientHeight, 0.1, 1000);
-  camera.position.set(0, 0, 60);
+  camera.position.set(0, 0, 150);
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(clientWidth, clientHeight);
@@ -53,11 +53,11 @@ const init = () => {
   scene.add(light);
 
   controls = new OrbitControls(camera, renderer.domElement);
-  // controls.enableRotate = false;
-  // controls.enablePan = false;
-  // controls.enableZoom = true;
-  // controls.minDistance = 10;
-  // controls.maxDistance = 50;
+  controls.enableRotate = false;
+  controls.enablePan = false;
+  controls.enableZoom = true;
+  controls.minDistance = 10;
+  controls.maxDistance = 150;
   {
     //가벽 만들기
     const loader = new THREE.TextureLoader();
@@ -75,7 +75,7 @@ const init = () => {
     });
 
     const wallWidth = distance * imageList.length + distance;
-    const geometry = new THREE.BoxGeometry(wallWidth, 100, 2);
+    const geometry = new THREE.BoxGeometry(wallWidth, 300, 2);
     const material = new THREE.MeshStandardMaterial({
       map: baseColor,
       normalMap: normalMap,
@@ -112,7 +112,7 @@ const addBox = (i) => {
     }
   );
 
-  const baseWidth = 68;
+  const baseWidth = 200;
   const aspectRatio = 16 / 9;
   const baseHeight = baseWidth / aspectRatio;
 
@@ -129,7 +129,7 @@ const addBox = (i) => {
   boxMesh.position.set(x, y, 0.2);
   galleryGroup.add(boxMesh);
 
-  const frameThickness = 3;
+  const frameThickness = 5;
   const frameGeometry = new THREE.BoxGeometry(
     baseWidth + frameThickness,
     baseHeight + frameThickness,
@@ -148,11 +148,11 @@ const addBox = (i) => {
 
 
   const spotLight = new THREE.SpotLight(0xffffff, 180);
-  spotLight.position.set(x, 40, 80);
+  spotLight.position.set(x, 110, 200);
   spotLight.angle = Math.PI / 6;
   spotLight.penumbra = 0.1;
   spotLight.decay = 1;
-  spotLight.distance = 200;
+  spotLight.distance = 500;
   spotLight.target = boxMesh;
   spotLight.castShadow = true;
 
