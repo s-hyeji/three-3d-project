@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from "OrbitControls";
+import { GLTFLoader } from 'GLTFLoader';
 import gsap from 'gsap';
 
 
@@ -34,12 +35,12 @@ export class GalleryApp {
 
     this.initRenderer();
     this.initCamera();
-    // this.initControls();
     this.initScene();
     this.addBoxes();
     this.addEvents();
     this.animate = this.animate.bind(this);
     this.animate();
+    this.initControls();
   }
 
   initRenderer() {
@@ -57,13 +58,14 @@ export class GalleryApp {
       1000
     );
     this.camera.position.set(0, 0, 150);
+    // this.camera.position.set(0, 0, 300);
   }
 
-  // initControls() {
-  //   this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-  //   this.controls.enableRotate = false;
-  //   this.controls.enableZoom = false;
-  // }
+  initControls() {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls.enableRotate = false;
+    // this.controls.enableZoom = false;
+  }
 
 
   initScene() {
@@ -92,7 +94,8 @@ export class GalleryApp {
 
     this.galleryGroup.add(wallMesh);
 
-    const wallLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    // const wallLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    const wallLight = new THREE.DirectionalLight(0xffffff, 1.4);
     wallLight.position.set(0, 60, 50);
     wallLight.castShadow = false;
     this.scene.add(wallLight);
@@ -100,10 +103,13 @@ export class GalleryApp {
     this.scene.add(this.galleryGroup);
   }
 
+
   addBoxes() {
+    const loader = new GLTFLoader();
+
     for (let i = 0; i < this.imageList.length; i++) {
       const texture = new THREE.TextureLoader().load(
-        imageList[i].src,
+        this.imageList[i].src,
         (loadedTexture) => {
           loadedTexture.colorSpace = THREE.SRGBColorSpace;
         }
@@ -115,18 +121,25 @@ export class GalleryApp {
       const material = new THREE.MeshPhongMaterial({ map: texture });
 
       const boxMesh = new THREE.Mesh(geometry, material);
-      boxMesh.position.set(i * this.distance, 0, 0.2);
-      boxMesh.castShadow = true;
-      boxMesh.receiveShadow = true;
+      boxMesh.position.set(i * this.distance, 0, 4.6);
+      // boxMesh.castShadow = true;
+      // boxMesh.receiveShadow = true;
       this.galleryGroup.add(boxMesh);
       this.clickableBoxes.push(boxMesh);
 
-      const frameGeo = new THREE.BoxGeometry(baseWidth + 5, baseHeight + 5, 2.2);
-      const frameMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-      const frame = new THREE.Mesh(frameGeo, frameMat);
-      frame.position.set(i * this.distance, 0, 0);
-      frame.castShadow = frame.receiveShadow = true;
-      this.galleryGroup.add(frame);
+      loader.load('models/picture_frame.glb', (gltf) => {
+        const model = gltf.scene.clone(true);
+        model.position.set(i * this.distance, -85, -18); // 이미지 박스와 겹치게
+        model.rotation.x = Math.PI / 13.8
+        model.scale.set(36.2, 38.8, 10); // 모델에 맞게 조정 (필요 시 수정)
+        model.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        this.galleryGroup.add(model);
+      });
 
       const light = new THREE.SpotLight(0xffffff, 400);
       light.position.set(i * this.distance, 110, 200);
@@ -141,6 +154,48 @@ export class GalleryApp {
       this.galleryGroup.add(light.target);
     }
   }
+
+  // addBoxes() {
+  //   for (let i = 0; i < this.imageList.length; i++) {
+  //     const texture = new THREE.TextureLoader().load(
+  //       imageList[i].src,
+  //       (loadedTexture) => {
+  //         loadedTexture.colorSpace = THREE.SRGBColorSpace;
+  //       }
+  //     );
+
+  //     const baseWidth = 200;
+  //     const baseHeight = baseWidth / (16 / 9);
+  //     const geometry = new THREE.BoxGeometry(baseWidth, baseHeight, 2);
+  //     const material = new THREE.MeshPhongMaterial({ map: texture });
+
+  //     const boxMesh = new THREE.Mesh(geometry, material);
+  //     boxMesh.position.set(i * this.distance, 0, 0.2);
+  //     boxMesh.castShadow = true;
+  //     boxMesh.receiveShadow = true;
+  //     this.galleryGroup.add(boxMesh);
+  //     this.clickableBoxes.push(boxMesh);
+
+  //     const frameGeo = new THREE.BoxGeometry(baseWidth + 5, baseHeight + 5, 2.2);
+  //     const frameMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
+  //     const frame = new THREE.Mesh(frameGeo, frameMat);
+  //     frame.position.set(i * this.distance, 0, 0);
+  //     frame.castShadow = frame.receiveShadow = true;
+  //     this.galleryGroup.add(frame);
+
+  //     const light = new THREE.SpotLight(0xffffff, 400);
+  //     light.position.set(i * this.distance, 110, 200);
+  //     light.target = boxMesh;
+  //     light.angle = Math.PI / 6;
+  //     light.distance = 500;
+  //     light.decay = 1;
+  //     light.penumbra = 0.1;
+  //     light.castShadow = true;
+
+  //     this.galleryGroup.add(light);
+  //     this.galleryGroup.add(light.target);
+  //   }
+  // }
   getIntersectsFromEvent(e) {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
