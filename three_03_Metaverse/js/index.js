@@ -36,10 +36,6 @@ class Scene {
     this.pointer = new THREE.Vector2();
     this.raycaster.setFromCamera(this.pointer, this.camera);
 
-
-
-
-
     // Fog 설정
     // let fogNear = 1;
     // let fogFar = 400;
@@ -105,7 +101,6 @@ class Scene {
     this.hospital = new THREE.Object3D();
     this.bank = new THREE.Object3D();
     this.school = new THREE.Object3D();
-
 
     const fbxLoader = new FBXLoader();
     const objLoader = new OBJLoader();
@@ -266,9 +261,6 @@ class Scene {
 
     this.objectList = [this.police, this.hospital, this.bank, this.school];
     this.intersects = this.raycaster.intersectObjects(this.objectList);
-    // this.raycaster.setFromCamera(this.pointer, this.camera);
-    // this.objectList = [this.police, this.hospital, this.bank, this.school];
-    // this.intersects = this.raycaster.intersectObjects(this.objectList);
 
     if (this.intersects.length > 0) new popupQuiz(this.intersects[0].object.parent.name);
   }
@@ -317,6 +309,7 @@ const quizList = {
 
 window.addEventListener('pointermove', (e) => scene.onMouseMove(e));
 window.addEventListener('dblclick', (e) => scene.onClickEvent(e));
+// window.addEventListener('click', (e) => scene.onClickEvent(e));
 
 class popupQuiz {
   constructor(name) {
