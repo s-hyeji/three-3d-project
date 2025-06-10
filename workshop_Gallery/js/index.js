@@ -40,7 +40,7 @@ export class GalleryApp {
     this.addEvents();
     this.animate = this.animate.bind(this);
     this.animate();
-    this.initControls();
+    // this.initControls();
   }
 
   initRenderer() {
@@ -57,14 +57,14 @@ export class GalleryApp {
       0.1,
       1000
     );
-    this.camera.position.set(0, 0, 150);
+    this.camera.position.set(0, 0, 170);
     // this.camera.position.set(0, 0, 300);
   }
 
   initControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    // this.controls.enableRotate = false;
-    // this.controls.enableZoom = false;
+    this.controls.enableRotate = false;
+    this.controls.enableZoom = false;
   }
 
 
@@ -121,7 +121,7 @@ export class GalleryApp {
       const material = new THREE.MeshPhongMaterial({ map: texture });
 
       const boxMesh = new THREE.Mesh(geometry, material);
-      boxMesh.position.set(i * this.distance, 0, 4.6);
+      boxMesh.position.set(i * this.distance, 0, 5);
       // boxMesh.castShadow = true;
       // boxMesh.receiveShadow = true;
       this.galleryGroup.add(boxMesh);
@@ -129,9 +129,9 @@ export class GalleryApp {
 
       loader.load('models/picture_frame.glb', (gltf) => {
         const model = gltf.scene.clone(true);
-        model.position.set(i * this.distance, -85, -18); // 이미지 박스와 겹치게
+        model.position.set(i * this.distance, -91, -18);
         model.rotation.x = Math.PI / 13.8
-        model.scale.set(36.2, 38.8, 10); // 모델에 맞게 조정 (필요 시 수정)
+        model.scale.set(36.8, 41.5, 10);
         model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
@@ -142,7 +142,7 @@ export class GalleryApp {
       });
 
       const light = new THREE.SpotLight(0xffffff, 400);
-      light.position.set(i * this.distance, 110, 200);
+      light.position.set(i * this.distance, 220, 130);
       light.target = boxMesh;
       light.angle = Math.PI / 6;
       light.distance = 500;
@@ -154,48 +154,6 @@ export class GalleryApp {
       this.galleryGroup.add(light.target);
     }
   }
-
-  // addBoxes() {
-  //   for (let i = 0; i < this.imageList.length; i++) {
-  //     const texture = new THREE.TextureLoader().load(
-  //       imageList[i].src,
-  //       (loadedTexture) => {
-  //         loadedTexture.colorSpace = THREE.SRGBColorSpace;
-  //       }
-  //     );
-
-  //     const baseWidth = 200;
-  //     const baseHeight = baseWidth / (16 / 9);
-  //     const geometry = new THREE.BoxGeometry(baseWidth, baseHeight, 2);
-  //     const material = new THREE.MeshPhongMaterial({ map: texture });
-
-  //     const boxMesh = new THREE.Mesh(geometry, material);
-  //     boxMesh.position.set(i * this.distance, 0, 0.2);
-  //     boxMesh.castShadow = true;
-  //     boxMesh.receiveShadow = true;
-  //     this.galleryGroup.add(boxMesh);
-  //     this.clickableBoxes.push(boxMesh);
-
-  //     const frameGeo = new THREE.BoxGeometry(baseWidth + 5, baseHeight + 5, 2.2);
-  //     const frameMat = new THREE.MeshStandardMaterial({ color: 0x222222 });
-  //     const frame = new THREE.Mesh(frameGeo, frameMat);
-  //     frame.position.set(i * this.distance, 0, 0);
-  //     frame.castShadow = frame.receiveShadow = true;
-  //     this.galleryGroup.add(frame);
-
-  //     const light = new THREE.SpotLight(0xffffff, 400);
-  //     light.position.set(i * this.distance, 110, 200);
-  //     light.target = boxMesh;
-  //     light.angle = Math.PI / 6;
-  //     light.distance = 500;
-  //     light.decay = 1;
-  //     light.penumbra = 0.1;
-  //     light.castShadow = true;
-
-  //     this.galleryGroup.add(light);
-  //     this.galleryGroup.add(light.target);
-  //   }
-  // }
   getIntersectsFromEvent(e) {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -278,7 +236,7 @@ export class GalleryApp {
       const targetPos = new THREE.Vector3();
       mesh.getWorldPosition(targetPos);
 
-      const camTarget = targetPos.clone().add(new THREE.Vector3(0, 0, 80));
+      const camTarget = targetPos.clone().add(new THREE.Vector3(0, 0, 100));
 
       gsap.to(this.camera.position, {
         x: camTarget.x,
@@ -294,7 +252,7 @@ export class GalleryApp {
           this.controls.enableRotate = false;
           // this.controls.enableRotate = true;
           this.controls.minDistance = 20;
-          this.controls.maxDistance = 80;
+          this.controls.maxDistance = 100;
           this.controls.enablePan = true;
           this.controls.target.copy(targetPos);
           this.controls.update();
@@ -313,7 +271,7 @@ export class GalleryApp {
             const deltaX = e.clientX - this.startDrag.x;
             const deltaY = e.clientY - this.startDrag.y;
 
-            const speed = 0.08;
+            const speed = 0.09;
 
             this.controls.target.x -= deltaX * speed;
             this.controls.target.y += deltaY * speed;
