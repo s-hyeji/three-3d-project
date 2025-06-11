@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from "OrbitControls";
 import { GLTFLoader } from 'GLTFLoader';
+import { FontLoader } from "FontLoader";
+import { TextGeometry } from "TextGeometry";
 import gsap from 'gsap';
 
 
@@ -12,13 +14,16 @@ export class GalleryApp {
     this.home = document.querySelector(".goHome");
     this.clientWidth = this.container.clientWidth;
     this.clientHeight = this.container.clientHeight;
-    this.distance = 400;
+    this.distance = 500;
     this.pageNum = 0;
     this.targetNum = 0;
     this.moveX = 0;
 
     this.isZoomeHover = true;
+    this.isZoomed = false;
     this.isDragging = false;
+    this.isRotate = false;
+    this._dblclickAdded = false;
     this.startDrag = { x: 0, y: 0 };
 
     this.scene = new THREE.Scene();
@@ -48,6 +53,10 @@ export class GalleryApp {
     this.renderer.setSize(this.clientWidth, this.clientHeight);
     this.renderer.shadowMap.enabled = true;
     this.container.appendChild(this.renderer.domElement);
+
+    this.renderer.outputEncoding = THREE.sRGBEncoding;
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    this.renderer.toneMappingExposure = 1.3;
   }
 
   initCamera() {
@@ -55,31 +64,31 @@ export class GalleryApp {
       75,
       this.clientWidth / this.clientHeight,
       0.1,
-      1000
+      5000
     );
-    this.camera.position.set(0, 0, 170);
+    this.camera.position.set(0, 0, 200);
     // this.camera.position.set(0, 0, 300);
   }
 
   initControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.enableRotate = false;
-    this.controls.enableZoom = false;
+    // this.controls.enableRotate = false;
+    // this.controls.enableZoom = false;
   }
 
 
   initScene() {
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x080820, 0.2);
-    hemi.position.set(0, 50, 50);
-    this.scene.add(hemi);
+    // const hemi = new THREE.HemisphereLight(0xffffff, 0x080820, 0.2);
+    // hemi.position.set(0, 50, 50);
+    // this.scene.add(hemi);
 
     const wallTexture = new THREE.TextureLoader().load('mesh/Marble021_1K-PNG_Color.png');
     wallTexture.wrapS = wallTexture.wrapT = THREE.RepeatWrapping;
-    wallTexture.repeat.set(30, 4);
+    wallTexture.repeat.set(30, 20);
     wallTexture.colorSpace = THREE.SRGBColorSpace;
 
     const wallWidth = this.distance * this.imageList.length + this.distance;
-    const wallGeometry = new THREE.BoxGeometry(wallWidth, 300, 2);
+    const wallGeometry = new THREE.BoxGeometry(wallWidth, 1500, 2);
     const wallMaterial = new THREE.MeshStandardMaterial({
       map: wallTexture,
       roughness: 0.1,
@@ -94,13 +103,19 @@ export class GalleryApp {
 
     this.galleryGroup.add(wallMesh);
 
-    // const wallLight = new THREE.DirectionalLight(0xffffff, 0.5);
-    const wallLight = new THREE.DirectionalLight(0xffffff, 1.4);
-    wallLight.position.set(0, 60, 50);
+    const wallLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    // const wallLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    wallLight.position.set(0, 50, 50);
     wallLight.castShadow = false;
     this.scene.add(wallLight);
 
     this.scene.add(this.galleryGroup);
+
+    // const axes = new THREE.AxesHelper(150);
+    // this.scene.add(axes);
+
+    // const gridHelper = new THREE.GridHelper(240, 20);
+    // this.scene.add(gridHelper);
   }
 
 
@@ -129,29 +144,47 @@ export class GalleryApp {
 
       loader.load('models/picture_frame.glb', (gltf) => {
         const model = gltf.scene.clone(true);
-        model.position.set(i * this.distance, -91, -18);
-        model.rotation.x = Math.PI / 13.8
-        model.scale.set(36.8, 41.5, 10);
+        model.position.set((i * this.distance) + 0.1, -84.3, -20.7);
+        model.rotation.x = Math.PI / 12.2
+        model.scale.set(35.7, 39.4, 11);
         model.traverse((child) => {
           if (child.isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+          }
+          if (child.material) {
+            child.material.color?.set(0xffffff);
+            child.material.emissive?.set(0x111111); // 살짝 빛나는 효과
           }
         });
         this.galleryGroup.add(model);
       });
 
       const light = new THREE.SpotLight(0xffffff, 400);
-      light.position.set(i * this.distance, 220, 130);
+      light.position.set(i * this.distance, 230, 155);
       light.target = boxMesh;
       light.angle = Math.PI / 6;
-      light.distance = 500;
+      light.distance = 600;
       light.decay = 1;
       light.penumbra = 0.1;
       light.castShadow = true;
 
+      // const lightHelper = new THREE.SpotLightHelper(light);
+      // this.galleryGroup.add(lightHelper);
+
       this.galleryGroup.add(light);
       this.galleryGroup.add(light.target);
+
+
+      if (!this.frontLight) {
+        this.frontLight = new THREE.DirectionalLight(0xffffff, 0.36);
+        this.frontLight.position.set(0, 0, 100);
+        this.frontLight.target.position.set(0, 0, 0);
+        this.scene.add(this.frontLight);
+        this.scene.add(this.frontLight.target);
+        this.frontLight.castShadow = false;
+
+      }
     }
   }
   getIntersectsFromEvent(e) {
@@ -175,6 +208,28 @@ export class GalleryApp {
     };
   }
   addEvents() {
+    if (!this._dblclickAdded) {
+      this._dblclickAdded = true;
+
+      this.renderer.domElement.addEventListener("dblclick", (e) => {
+        if (!this.controls || !this.isZoomed || this.isAnimating) return;
+
+        const intersects = this.getIntersectsFromEvent(e);
+        if (intersects.length === 0) return;
+
+        const mesh = intersects[0].object;
+        const pos = new THREE.Vector3();
+        mesh.getWorldPosition(pos);
+
+        if (!this.isRotate) {
+          this.isRotate = true;
+          this.startRotation(pos);
+        } else {
+          this.endRotation();
+        }
+      });
+    }
+
     this.zoom.addEventListener("click", this.zoomClick.bind(this));
     this.home.addEventListener("click", this.homeClick.bind(this));
     this.renderer.domElement.addEventListener('mousemove', this.handleHover.bind(this));
@@ -225,6 +280,7 @@ export class GalleryApp {
 
   zoomClick(e) {
     this.isZoomeHover = false;
+    this.isZoomed = true;
     this.zoom.style.display = 'none';
     this.btns.forEach(e => e.classList.add("off"));
     this.home.style.display = "flex"
@@ -236,7 +292,7 @@ export class GalleryApp {
       const targetPos = new THREE.Vector3();
       mesh.getWorldPosition(targetPos);
 
-      const camTarget = targetPos.clone().add(new THREE.Vector3(0, 0, 100));
+      const camTarget = targetPos.clone().add(new THREE.Vector3(0, 0, 110));
 
       gsap.to(this.camera.position, {
         x: camTarget.x,
@@ -251,50 +307,91 @@ export class GalleryApp {
           this.controls = new OrbitControls(this.camera, this.renderer.domElement);
           this.controls.enableRotate = false;
           // this.controls.enableRotate = true;
-          this.controls.minDistance = 20;
-          this.controls.maxDistance = 100;
+          this.controls.minDistance = 10;
+          this.controls.maxDistance = 110;
           this.controls.enablePan = true;
           this.controls.target.copy(targetPos);
           this.controls.update();
-
-          const dom = this.renderer.domElement;
-
-          dom.addEventListener('mousedown', (e) => {
-            this.isDragging = true;
-            this.startDrag.x = e.clientX;
-            this.startDrag.y = e.clientY;
-          });
-
-          dom.addEventListener('mousemove', (e) => {
-            if (!this.isDragging || !this.controls) return;
-
-            const deltaX = e.clientX - this.startDrag.x;
-            const deltaY = e.clientY - this.startDrag.y;
-
-            const speed = 0.09;
-
-            this.controls.target.x -= deltaX * speed;
-            this.controls.target.y += deltaY * speed;
-
-            this.camera.position.x -= deltaX * speed;
-            this.camera.position.y += deltaY * speed;
-
-            this.startDrag.x = e.clientX;
-            this.startDrag.y = e.clientY;
-          });
-
-          dom.addEventListener('mouseup', () => {
-            this.isDragging = false;
-          });
-          dom.addEventListener('mouseleave', () => {
-            this.isDragging = false;
-          });
         }
+      });
+
+      const dom = this.renderer.domElement;
+
+      dom.addEventListener('mousedown', (e) => {
+        this.isDragging = true;
+        this.startDrag.x = e.clientX;
+        this.startDrag.y = e.clientY;
+      });
+
+      dom.addEventListener('mousemove', (e) => {
+        if (!this.isDragging || !this.controls) return;
+
+        const deltaX = e.clientX - this.startDrag.x;
+        const deltaY = e.clientY - this.startDrag.y;
+
+        const speed = 0.09;
+
+        this.controls.target.x -= deltaX * speed;
+        this.controls.target.y += deltaY * speed;
+
+        this.camera.position.x -= deltaX * speed;
+        this.camera.position.y += deltaY * speed;
+
+        this.startDrag.x = e.clientX;
+        this.startDrag.y = e.clientY;
+      });
+
+      dom.addEventListener('mouseup', () => {
+        this.isDragging = false;
+      });
+      dom.addEventListener('mouseleave', () => {
+        this.isDragging = false;
       });
     }
   }
+  // 
+  startRotation(targetPos) {
+    console.log("회전 시작");
+    this.controls.enableRotate = true;
+    this.home.style.display = "none";
+  }
+
+
+  endRotation() {
+    this.isAnimating = true;
+    this.controls.enableRotate = false;
+
+    gsap.to(this.camera.position, {
+      x: 0,
+      y: 0,
+      z: 110,
+      duration: 1.2,
+      ease: 'power1.out'
+    });
+
+    gsap.to(this.controls.target, {
+      x: 0,
+      y: 0,
+      z: 0,
+      duration: 1.2,
+      ease: 'power1.out',
+      onUpdate: () => this.controls.update(),
+      onComplete: () => {
+        this.isRotate = false;
+        this.isAnimating = false;
+        this.home.style.display = "flex";
+      }
+    });
+  }
+
+
+
+
+  // 
   homeClick(e) {
+    this.isRotate = false;
     this.isDragging = false;
+    this.isZoomed = false;
     this.controls.dispose();
     this.controls = null;
     this.camera.position.x = this.camera.position.y = 0;
@@ -302,27 +399,7 @@ export class GalleryApp {
     gsap.to(this.camera.position, {
       x: 0,
       y: 0,
-      z: 150,
-      duration: 1.2,
-      ease: 'power3.out',
-      onUpdate: () => {
-        this.camera.lookAt(this.scene.position);
-        this.home.style.display = "none"
-      },
-      onComplete: () => {
-        this.btns.forEach(e => e.classList.remove("off"));
-        this.prevBtn.classList.toggle('off', this.pageNum <= 0);
-        this.nextBtn.classList.toggle('off', this.pageNum >= this.imageList.length - 1);
-
-        this.isZoomeHover = true;
-        this.zoom.style.display = 'block';
-        this.zoom.style.opacity = '0';
-      }
-    });
-    gsap.to(this.camera.position, {
-      x: 0,
-      y: 0,
-      z: 150,
+      z: 200,
       duration: 1.2,
       ease: 'power3.out',
       onUpdate: () => {
