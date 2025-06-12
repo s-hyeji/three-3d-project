@@ -160,6 +160,58 @@ export class GalleryApp {
         this.galleryGroup.add(model);
       });
 
+      this.fontLoader = new FontLoader();
+      this.fontLoader.load('js/SUITSemiBold_Regular.json', (font) => {
+        for (let i = 0; i < this.imageList.length; i++) {
+          const label = this.imageList[i].text; // 각각의 작품 이름
+
+          // 텍스트 생성
+          const textGeo = new TextGeometry(label, {
+            font: font,
+            size: 4,
+            height: 1,
+            curveSegments: 4,
+          });
+          textGeo.center();
+
+          const textMat = new THREE.MeshBasicMaterial({
+            color: 0xb38b3f, // 골드 느낌 텍스트
+            metalness: 0.8,
+            roughness: 0.3,
+            emissive: new THREE.Color(0x6f4e1e), // 따뜻한 금빛 강조
+            emissiveIntensity: 0.2,
+          });
+          const textMesh = new THREE.Mesh(textGeo, textMat);
+          textMesh.position.z = 0.1;
+
+          // 배경 박스
+          const bgWidth = label.length * 5; // 대충 글자 수에 비례한 너비
+          const bgHeight = 16;
+          const bgGeo = new THREE.PlaneGeometry(bgWidth, bgHeight);
+
+          const bgMat = new THREE.MeshStandardMaterial({
+            color: 0xd4af37,
+            metalness: 1.0,
+            roughness: 0.3,
+            clearcoat: 0.6,
+            clearcoatRoughness: 0.1,
+          });
+          const bgMesh = new THREE.Mesh(bgGeo, bgMat);
+
+          // 그룹으로 묶기
+          const captionGroup = new THREE.Group();
+          captionGroup.add(bgMesh);
+          captionGroup.add(textMesh);
+
+          // 위치 지정: 각 액자 아래
+          const x = i * this.distance;
+          const y = -105;
+          const z = 1;
+          captionGroup.position.set(x, y, z);
+
+          this.galleryGroup.add(captionGroup);
+        }
+      });
       const light = new THREE.SpotLight(0xffffff, 400);
       light.position.set(i * this.distance, 230, 155);
       light.target = boxMesh;
@@ -178,7 +230,7 @@ export class GalleryApp {
 
       if (!this.frontLight) {
         this.frontLight = new THREE.DirectionalLight(0xffffff, 0.36);
-        this.frontLight.position.set(0, 0, 100);
+        this.frontLight.position.set(0, -8, 100);
         this.frontLight.target.position.set(0, 0, 0);
         this.scene.add(this.frontLight);
         this.scene.add(this.frontLight.target);
@@ -350,7 +402,7 @@ export class GalleryApp {
     }
   }
   // 
-  startRotation(targetPos) {
+  startRotation() {
     console.log("회전 시작");
     this.controls.enableRotate = true;
     this.home.style.display = "none";
