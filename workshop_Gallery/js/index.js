@@ -163,9 +163,8 @@ export class GalleryApp {
       this.fontLoader = new FontLoader();
       this.fontLoader.load('js/SUITSemiBold_Regular.json', (font) => {
         for (let i = 0; i < this.imageList.length; i++) {
-          const label = this.imageList[i].text; // 각각의 작품 이름
+          const label = this.imageList[i].text;
 
-          // 텍스트 생성
           const textGeo = new TextGeometry(label, {
             font: font,
             size: 4,
@@ -178,14 +177,13 @@ export class GalleryApp {
             color: 0xb38b3f, // 골드 느낌 텍스트
             metalness: 0.8,
             roughness: 0.3,
-            emissive: new THREE.Color(0x6f4e1e), // 따뜻한 금빛 강조
+            emissive: new THREE.Color(0x6f4e1e),
             emissiveIntensity: 0.2,
           });
           const textMesh = new THREE.Mesh(textGeo, textMat);
           textMesh.position.z = 0.1;
 
-          // 배경 박스
-          const bgWidth = label.length * 5; // 대충 글자 수에 비례한 너비
+          const bgWidth = label.length * 5;
           const bgHeight = 16;
           const bgGeo = new THREE.PlaneGeometry(bgWidth, bgHeight);
 
@@ -198,12 +196,10 @@ export class GalleryApp {
           });
           const bgMesh = new THREE.Mesh(bgGeo, bgMat);
 
-          // 그룹으로 묶기
           const captionGroup = new THREE.Group();
           captionGroup.add(bgMesh);
           captionGroup.add(textMesh);
 
-          // 위치 지정: 각 액자 아래
           const x = i * this.distance;
           const y = -105;
           const z = 1;
